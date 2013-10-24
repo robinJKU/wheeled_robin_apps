@@ -1,0 +1,19 @@
+<package>
+  <name>wheeled_robin_core_apps</name>
+  <version>1.0.0</version>
+  <description>The core set of wheeled_robin 'app manager' apps are defined in this package. </description>
+
+  <maintainer email="joh.mayr@jku.at">Johannes Mayr</maintainer>
+
+  <license>BSD</license>
+
+  <url type="website">http://ros.org/wiki/wheeled_robin_core_apps</url> 
+  <url type="repository">https://github.com/robinJKU/wheeled_robin_apps</url>
+  <url type="bugtracker">https://github.com/robinJKU/wheeled_robin_apps/issues</url>
+  
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>wheeled_robin_bringup</run_depend>
+  <run_depend>wheeled_robin_teleop</run_depend>
+
+</package>

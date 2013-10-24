@@ -1,0 +1,6 @@
+display: Thrustmaster Teleop
+description: Control the WheeledRobin with a Thrustmaster Joystick.
+platform: linux.ros.turtlebot
+launch: wheeled_robin_teleop/thrustmaster_teleop.launch
+interface: wheeled_robin_core_apps/thrustmaster_teleop.interface
+icon: wheeled_robin_core_apps/ps3_bubble_icon.png
