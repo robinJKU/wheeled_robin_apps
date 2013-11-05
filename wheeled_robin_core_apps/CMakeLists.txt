@@ -8,7 +8,3 @@ catkin_package()
 install(DIRECTORY rapps
         DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
-
-install(DIRECTORY media
-        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-)
