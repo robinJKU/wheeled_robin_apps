@@ -15,6 +15,5 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <run_depend>joy</run_depend>
-  <run_depend>turtlebot_teleop</run_depend>
 
 </package>
