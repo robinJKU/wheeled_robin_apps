@@ -6,10 +6,11 @@
   <maintainer email="joh.mayr@jku.at">Johannes Mayr</maintainer>
 
   <license>BSD</license>
-
   <url type="website">http://ros.org/wiki/wheeled_robin_core_apps</url> 
   <url type="repository">https://github.com/robinJKU/wheeled_robin_apps</url>
   <url type="bugtracker">https://github.com/robinJKU/wheeled_robin_apps/issues</url>
+  <author email="joh.mayr@jku.at">Johannes Mayr</author>
+  <author email="klemens.springer@jku.at">Klemens Springer</author>
   
   <buildtool_depend>catkin</buildtool_depend>
 
