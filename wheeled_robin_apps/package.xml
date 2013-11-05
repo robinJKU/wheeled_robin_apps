@@ -12,6 +12,7 @@
 
   <buildtool_depend>catkin</buildtool_depend>
   <run_depend>wheeled_robin_teleop</run_depend>
+  <run_depend>wheeled_robin_core_apps</run_depend>
 
   <export>
     <metapackage/>
