@@ -4,7 +4,7 @@
 #include <math.h>
 
 #define _USE_MATH_DEFINES
-#define WAITING_TIME 10.0f
+#define WAITING_TIME 0.5f
 #define MAX_DIST 0.1f
 #define SEARCH_TIME_SEC 60
 
@@ -28,7 +28,7 @@ int main(int argc, char** argv){
   tf::TransformListener listener;
   tf::StampedTransform last_o2m;
   
-  ros::Rate rate(10.0);
+  ros::Rate rate(100.0);
   bool searching = false , initialized = false;
   ros::Time search_start;
   
@@ -40,11 +40,12 @@ int main(int argc, char** argv){
       ros::Time now = ros::Time::now();
       
       listener.waitForTransform("odom", marker_tf_name, now, ros::Duration(WAITING_TIME));
-      listener.lookupTransform("odom", marker_tf_name, now, odom2marker);
+      listener.lookupTransform("odom", marker_tf_name, ros::Time(0), odom2marker);
 
       tf::Transform marker2goal;     
       marker2goal.setOrigin( tf::Vector3(dist_x, 0.0, dist_z) );
-      marker2goal.setRotation( tf::Quaternion(tf::Vector3(0,0,1), 0) );
+      //marker2goal.setOrigin( tf::Vector3(-1,0,0));
+	marker2goal.setRotation( tf::Quaternion(tf::Vector3(0,0,1), 0) );
       
       tf::Transform odom2goal;
       odom2goal = odom2marker*marker2goal;
@@ -52,6 +53,7 @@ int main(int argc, char** argv){
       last_o2m = odom2marker;
       
       broadcast.sendTransform(tf::StampedTransform(odom2goal, ros::Time::now(), "odom", goal_tf_name));
+            
       searching = false;
       initialized = true;
     }
@@ -61,6 +63,7 @@ int main(int argc, char** argv){
       tf::StampedTransform odom2base;
       listener.lookupTransform("odom", "base_footprint", ros::Time(0), odom2base);
       tf::Vector3 diff_origin = odom2base.getOrigin()-last_o2m.getOrigin();
+
       if (initialized)
       {
 	if(diff_origin.length() >= MAX_DIST)
@@ -91,6 +94,9 @@ int main(int argc, char** argv){
 	} // else
       } // if(initialized)
     } // catch
+    ros::spinOnce();
+    rate.sleep();
   }
+
   return 0;
 };

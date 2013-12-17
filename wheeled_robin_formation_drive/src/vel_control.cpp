@@ -18,7 +18,7 @@ int main(int argc, char** argv){
 	
 	tf::TransformListener listener;
 
-	ros::Rate rate(100.0);
+	ros::Rate rate(10.0);
 
 	while (node.ok()){
 
@@ -26,7 +26,7 @@ int main(int argc, char** argv){
 	  geometry_msgs::Twist vel_msg;
 	  
 	  try {
-	    listener.waitForTransform("base_footprint", goal_tf_name, ros::Time(0), ros::Duration(10.0) );
+	    listener.waitForTransform("base_footprint", goal_tf_name, ros::Time(0), ros::Duration(1.0) );
 	    listener.lookupTransform("base_footprint", goal_tf_name, ros::Time(0), transform);
 	    
 	    double r_euklid = sqrt(pow(transform.getOrigin().x(), 2) + pow(transform.getOrigin().y(), 2));
@@ -38,23 +38,24 @@ int main(int argc, char** argv){
 	      
 	    //} else {
 
-	      vel_msg.linear.x = 0.7 * r_euklid;
-	      vel_msg.angular.z =  atan2(transform.getOrigin().y(), transform.getOrigin().x());
-
+	      vel_msg.linear.x = 0.5 * r_euklid;
+	      vel_msg.angular.z = 4 * atan2(transform.getOrigin().y(), transform.getOrigin().x());
+		//ROS_INFO("%f-  %f--     %f", transform.getOrigin().x(), transform.getOrigin().y(), r_euklid);
 	    //} //if(r_euklid)
 	    
 	    if(vel_msg.linear.x > 1.5) vel_msg.linear.x = 1.5;
-	    if(vel_msg.angular.z > 0.5) vel_msg.angular.z = 0.5;
+	    if(fabs(vel_msg.angular.z) > 0.5) vel_msg.angular.z = 0.5*vel_msg.angular.z/fabs(vel_msg.angular.z);
 	    
 	  } catch (tf::TransformException ex) {
-	    ROS_ERROR("%s",ex.what());
+	    ROS_INFO("%s",ex.what());
 	    vel_msg.linear.x = 0;
 	    vel_msg.angular.z = 0;
 	  }
 
 	  vel_msg_pub.publish(vel_msg);
+	  ros::spinOnce();
+	  rate.sleep();
 	}
 	
-	rate.sleep();
 	return 0;
 };
