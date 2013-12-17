@@ -1,0 +1,33 @@
+<launch>
+  <!--<include file="$(find roomba_robin_bringup)/launch/minimal.launch" />-->
+  <include file="$(find turtlebot_bringup)/launch/3dsensor.launch">
+    <arg name="rgb_processing" value="true"/>
+    <arg name="depth_processing" value="true"/>
+    <arg name="depth_registered_processing" value="true"/>
+    <arg name="depth_registration" value="false"/>
+    <arg name="disparity_processing" value="true"/>
+    <arg name="disparity_registered_processing" value="true"/>
+    <arg name="scan_processing" value="true"/>
+    <arg name="publish_tf"  value="false"/>
+  </include>
+  <node name="ar_kinect" pkg="ar_kinect" type="ar_kinect" respawn="false" output="screen">
+    <remap from="points" to="/camera/depth_registered/points"/>
+    <param name="marker_pattern_list" type="string" value="$(find wheeled_robin_formation_drive)/data/objects_kinect"/>
+    <param name="marker_data_directory" type="string" value="$(find ar_pose)"/>
+    <param name="threshold" type="int" value="100"/>
+    <param name="publish_tf" type="bool" value="true" />
+  </node>
+  <param name="goal_frame" type="string" value="goal"/>	
+  <param name="marker_frame" type="string" value="master_pattern"/>
+  <node name="marker_validation" pkg="wheeled_robin_formation_drive" type="marker_validation" output="screen" >
+    <param name="x_offset" type="double" value="1.0"/>
+    <param name="y_offset" type="double" value="1.0"/>
+  </node>
+  <node name="calc_vel" pkg="wheeled_robin_formation_drive" type="vel_control" output="screen">
+    <param name="p_lin" type="double" value="4.0"/>
+    <param name="p_ang" type="double" value="0.5"/>
+    <remap from="/cmd_vel" to="/cmd_vel_mux/input/teleop" />
+  </node>
+
+  <!--<node name="rviz" pkg="rviz" type="rviz" args="-d $(find wheeled_robin_formation_drive)/launch/rviz_formation.rviz" />-->
+</launch>
