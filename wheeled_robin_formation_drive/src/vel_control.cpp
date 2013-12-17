@@ -22,25 +22,39 @@ int main(int argc, char** argv){
 
 	while (node.ok()){
 
-		tf::StampedTransform transform;
+	  tf::StampedTransform transform;
+	  geometry_msgs::Twist vel_msg;
+	  
+	  try {
+	    listener.waitForTransform("base_footprint", goal_tf_name, ros::Time(0), ros::Duration(10.0) );
+	    listener.lookupTransform("base_footprint", goal_tf_name, ros::Time(0), transform);
+	    
+	    double r_euklid = sqrt(pow(transform.getOrigin().x(), 2) + pow(transform.getOrigin().y(), 2));
 
-		try {
-			listener.waitForTransform("base_footprint", goal_tf_name, ros::Time(0), ros::Duration(10.0) );
-			listener.lookupTransform("base_footprint", goal_tf_name, ros::Time(0), transform);
-		} catch (tf::TransformException ex) {
-			ROS_ERROR("%s",ex.what());
-		}
+	    //if(r_euklid < 0.05){
+	      
+	    // vel_msg.linear.x = 0;
+	      //vel_msg.angular.z = 4 * transform.getRotation().z();
+	      
+	    //} else {
 
+	      vel_msg.linear.x = 0.7 * r_euklid;
+	      vel_msg.angular.z =  atan2(transform.getOrigin().y(), transform.getOrigin().x());
 
-		geometry_msgs::Twist vel_msg;
+	    //} //if(r_euklid)
+	    
+	    if(vel_msg.linear.x > 1.5) vel_msg.linear.x = 1.5;
+	    if(vel_msg.angular.z > 0.5) vel_msg.angular.z = 0.5;
+	    
+	  } catch (tf::TransformException ex) {
+	    ROS_ERROR("%s",ex.what());
+	    vel_msg.linear.x = 0;
+	    vel_msg.angular.z = 0;
+	  }
 
-		vel_msg.angular.z = p_lin * atan2(transform.getOrigin().y(), transform.getOrigin().x());
-		vel_msg.linear.x = p_ang * sqrt(pow(transform.getOrigin().x(), 2) + pow(transform.getOrigin().y(), 2));
-		ROS_INFO("Speed: %3.2f", vel_msg.linear.x);
-		vel_msg_pub.publish(vel_msg);
-
-		rate.sleep();
+	  vel_msg_pub.publish(vel_msg);
 	}
-
+	
+	rate.sleep();
 	return 0;
 };
