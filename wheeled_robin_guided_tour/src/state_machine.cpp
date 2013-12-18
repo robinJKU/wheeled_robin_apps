@@ -2,7 +2,12 @@
  * Node that uses the WheeledRobin robot to perform a guided tour
  * with multiple stops. It provides interfaces to nodes for 
  * navigation, speech synthesis, physical user interfaces and displaying 
- * graphics and uses a state machine to manage the workflow.  
+ * graphics and uses a state machine to manage the workflow.
+ * 
+ * JKU Linz
+ * Institute for Robotics
+ * Alexander Reiter, Armin Steinhauser
+ * December 2013
  */
 
 #include <ros/ros.h>
@@ -44,7 +49,7 @@ int main(int argc, char** argv) {
 	ros::Subscriber button_sub = nh.subscribe<std_msgs::Bool>("/pushed", 1, buttonCb);
 	
 	// client for navigation goals
-	actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> client("move_base/goal", true);
+	actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> client("move_base", true);
 	//client.waitForServer();
 	
 	// init state machine
@@ -72,6 +77,10 @@ int main(int argc, char** argv) {
 	last_button_msg_time = ros::Time(0);
 	
 	move_base_msgs::MoveBaseGoal goal;
+	goal.target_pose.header.frame_id = "map";
+	
+	// wait for other nodes to start up
+	ros::Duration(10).sleep();
 	
 	while(ros::ok()) {
 		switch(st) {
@@ -85,6 +94,7 @@ int main(int argc, char** argv) {
 			case RETURN_START: {
 				if (client.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
 					st = WAIT_PERSON;
+					ROS_INFO("Reached start position");
 					ROS_INFO("Switching to state %d", st);
 				}
 				current_goal = 0;
@@ -95,7 +105,7 @@ int main(int argc, char** argv) {
 				try {
 					listener.lookupTransform("/base_footprint", person_frame, ros::Time(0), transform);
 				} catch (tf::TransformException ex) {
-					ROS_ERROR("%s", ex.what());
+					//ROS_ERROR("%s", ex.what());
 					break;
 				}
 				tf::Vector3 distance = transform.getOrigin();
@@ -105,12 +115,15 @@ int main(int argc, char** argv) {
 				if(person_range <= base_range) { // person within range
 					createPoseFromParams("base", &(goal.target_pose));
 					client.sendGoal(goal);
+					ROS_INFO("Person within range of base detected");
+					st = APPROACH_PERSON;
 				}
 				break;
 			}
 			case APPROACH_PERSON: {
 				if (client.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) { // goal reached
 					st = ASK_PERSON;
+					ROS_INFO("Reached person");
 					ROS_INFO("Switching to state %d", st);
 				}
 				break;
@@ -133,6 +146,7 @@ int main(int argc, char** argv) {
 						ss << current_goal;
 						createPoseFromParams(ss.str().c_str(), &(goal.target_pose));
 						client.sendGoal(goal);
+						ROS_INFO("Tour requested");
 						ROS_INFO("Switching to state %d", st);
 					} 
 				} else { // no tour requested
@@ -140,6 +154,7 @@ int main(int argc, char** argv) {
 					say_nothanks.data = "Thanks for wasting my time. Good bye.";
 					speech_pub.publish(say_nothanks);
 					st = RETURN_START;
+					ROS_INFO("No tour requested.");
 					ROS_INFO("Switching to state %d", st);
 				}
 				break;
@@ -160,6 +175,7 @@ int main(int argc, char** argv) {
 				ros::param::get("goal_basename", video_path.data);
 				video_path.data = video_path.data + video_path.data;
 				break;
+				//TODO check if presentation is finished, switch to ASK_REPETITION
 			}
 			case ASK_REPETITION: {
 				std_msgs::String ask_pres;
@@ -174,6 +190,7 @@ int main(int argc, char** argv) {
 				if(ros::Time::now() - ask_time > ros::Duration(button_duration)) {
 					if(last_button_msg_time > ask_time && last_button_state) { // repetition requested
 						st = PRESENT;
+						ROS_INFO("Button pressed");
 						ROS_INFO("Switching to state %d", st);
 					} 
 				} else { // no repetition requested
@@ -247,7 +264,7 @@ void createPoseFromParams(std::string param_name, geometry_msgs::PoseStamped* po
  * 
  * OUTPUT:	none
  */
- void buttonCb(std_msgs::Bool msg) {
-	 last_button_msg_time = ros::Time::now();
-	 last_button_state = msg.data;
- }
+void buttonCb(std_msgs::Bool msg) {
+	last_button_msg_time = ros::Time::now();
+	last_button_state = msg.data;
+}

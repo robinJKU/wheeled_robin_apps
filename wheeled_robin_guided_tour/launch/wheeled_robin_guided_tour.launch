@@ -1,11 +1,16 @@
 <launch>
+	# roobma_robin bringup procedure
+	<include file="$(find roomba_robin_bringup)/launch/minimal.launch"/>
+	
+	# navigation
+	<include file="$(find turtlebot_navigation)/launch/amcl_demo.launch">
+	    <arg name="map_file"  value="/home/turtlebot/fullMap.yaml"/>
+	</include>
 	
 	# load parameters (such as coordinates of goals, etc.)
 	<rosparam file="$(find wheeled_robin_guided_tour)/launch/parameters.yaml" command="load" ns="goals" />
 	
-	# launch needed nodes
-	<include file="$(find robin_people_detection)/launch/robin_people_detection.launch" />
-	
+	# guided tour state machine
 	<node pkg="wheeled_robin_guided_tour" name="state_machine" type="state_machine">
 		
 		# range (from base) to trigger area (triggering radius)
@@ -18,13 +23,30 @@
 		<param name="button_duration" value="5.0" type="double" />
 		
 		# basename for goal parameters (e.g. "goal_1","goal_2", ... where "goal_" is basename)
-		<param name="goal_basename" value="goal_" type="double" />
+		<param name="goal_basename" value="goal_" type="string" />
 		
 		# absolute path to parent video folder
 		<param name="video_path" value="/home/USERNAME/Downloads" type="string" />
 		
 	</node>
 	
-	<node pkg="rosserial_python" name="serial_node.py" args="/dev/ttyACM0" />
+	<node pkg="rosserial_python" type="serial_node.py" args="/dev/ttyACM0" name="rosserial"/>
+	<!--
+	<include file="$(find turtlebot_bringup)/launch/3dsensor.launch">
+	    <arg name="publish_tf"  value="true"/>
+	    <arg name="rgb_processing" value="true"/>
+	    <arg name="depth_processing" value="true"/>
+	    <arg name="depth_registered_processing" value="false"/>
+	    <arg name="depth_registration" value="false"/>
+	    <arg name="disparity_processing" value="false"/>
+	    <arg name="disparity_registered_processing" value="false"/>
+	    <arg name="scan_processing" value="false"/>
+	</include>
+
+	<node name="openni_tracker" pkg="openni_tracker" type="openni_tracker" args="-d $(find openni_tracker)/openni_tracker.xml" output="screen" >
+		<param name = "camera_frame_id" value = "/camera_link" />
+	</node>
 	
+	<node pkg="robin_people_detection" type="robin_people_detection" name="robin_people_detection" output="screen" />
+	-->
 </launch>
