@@ -7,6 +7,8 @@
 	    <arg name="map_file"  value="/home/turtlebot/fullMap.yaml"/>
 	</include>
 	
+	<node pkg="tf" type="static_transform_publisher" name="link1_broadcaster" args="3 0 0 0 0 0 map person_threshold 1000" />
+	
 	# load parameters (such as coordinates of goals, etc.)
 	<rosparam file="$(find wheeled_robin_guided_tour)/launch/parameters.yaml" command="load" ns="goals" />
 	
