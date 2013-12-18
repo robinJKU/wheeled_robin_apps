@@ -4,7 +4,8 @@
 	<rosparam file="$(find wheeled_robin_guided_tour)/launch/parameters.yaml" command="load" ns="goals" />
 	
 	# launch needed nodes
-	<include file="$(find robin_people_detection)/launch/robin_people_detection.launch" />
+	#<include file="$(find robin_people_detection)/launch/robin_people_detection.launch" />
+	
 	
 	<node pkg="wheeled_robin_guided_tour" name="state_machine" type="state_machine">
 		
@@ -25,6 +26,23 @@
 		
 	</node>
 	
-	<node pkg="rosserial_python" name="serial_node.py" args="/dev/ttyACM0" />
+	<node pkg="rosserial_python" type="serial_node.py" args="/dev/ttyACM0" name="rosserial"/>
+	
+	<include file="$(find turtlebot_bringup)/launch/3dsensor.launch">
+	    <arg name="publish_tf"  value="true"/>
+	    <arg name="rgb_processing" value="true"/> <!-- only required if we use android client -->
+	    <arg name="depth_processing" value="true"/>
+	    <arg name="depth_registered_processing" value="false"/>
+	    <arg name="depth_registration" value="false"/>
+	    <arg name="disparity_processing" value="false"/>
+	    <arg name="disparity_registered_processing" value="false"/>
+	    <arg name="scan_processing" value="false"/>
+	</include>
+
+	<node name="openni_tracker" pkg="openni_tracker" type="openni_tracker" args="-d $(find openni_tracker)/openni_tracker.xml" output="screen" >
+		<param name = "camera_frame_id" value = "/camera_link" />
+	</node>
+	
+	<node pkg="people_detection" type="people_detection" name="person_detector" output="screen" />
 	
 </launch>
