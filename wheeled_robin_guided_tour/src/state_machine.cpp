@@ -77,6 +77,10 @@ int main(int argc, char** argv) {
 	last_button_msg_time = ros::Time(0);
 	
 	move_base_msgs::MoveBaseGoal goal;
+	goal.target_pose.header.frame_id = "map";
+	
+	// wait for other nodes to start up
+	ros::Duration(10).sleep();
 	
 	while(ros::ok()) {
 		switch(st) {
