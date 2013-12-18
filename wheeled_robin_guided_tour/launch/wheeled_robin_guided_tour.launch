@@ -3,10 +3,6 @@
 	# load parameters (such as coordinates of goals, etc.)
 	<rosparam file="$(find wheeled_robin_guided_tour)/launch/parameters.yaml" command="load" ns="goals" />
 	
-	# launch needed nodes
-	#<include file="$(find robin_people_detection)/launch/robin_people_detection.launch" />
-	
-	
 	<node pkg="wheeled_robin_guided_tour" name="state_machine" type="state_machine">
 		
 		# range (from base) to trigger area (triggering radius)
