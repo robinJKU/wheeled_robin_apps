@@ -7,6 +7,7 @@
 	    <arg name="map_file"  value="/home/turtlebot/fullMap.yaml"/>
 	</include>
 	
+	# transform from map to threshold position of persons to be approached and asked about a tour
 	<node pkg="tf" type="static_transform_publisher" name="person_threshold_broadcaster" args="3 0 0 0 0 0 map person_threshold 1000" />
 	
 	# load parameters (such as coordinates of goals, etc.)
@@ -16,11 +17,10 @@
 	<node pkg="wheeled_robin_guided_tour" name="state_machine" type="state_machine">
 		
 		# range (from base) to trigger area (triggering radius)
-		<param name="base_range" value="0.5" type="double" />
+		<param name="base_range" value="1.0" type="double" />
 		
 		# frame of identified person/group ("/dominant_person" or "/group")
 		<param name="person_frame" value="/dominant_person" type="string" />
-		person__threshold_frame
 		
 		# name of frame of person position threshold
 		<param name="person_threshold_frame" value="/person_threshold_frame" type="string" />
@@ -36,23 +36,15 @@
 		
 	</node>
 	
+	# connection to Arduino for hardware user interface
 	<node pkg="rosserial_python" type="serial_node.py" args="/dev/ttyACM0" name="rosserial"/>
-	<!--
-	<include file="$(find turtlebot_bringup)/launch/3dsensor.launch">
-	    <arg name="publish_tf"  value="true"/>
-	    <arg name="rgb_processing" value="true"/>
-	    <arg name="depth_processing" value="true"/>
-	    <arg name="depth_registered_processing" value="false"/>
-	    <arg name="depth_registration" value="false"/>
-	    <arg name="disparity_processing" value="false"/>
-	    <arg name="disparity_registered_processing" value="false"/>
-	    <arg name="scan_processing" value="false"/>
-	</include>
-	-->
+	
+	# person tracking node
 	<node name="openni_tracker" pkg="openni_tracker" type="openni_tracker" args="-d $(find openni_tracker)/openni_tracker.xml" output="screen" >
 		<param name = "camera_frame_id" value = "/camera_link" />
 	</node>
 	
+	# person detection node
 	<node pkg="robin_people_detection" type="robin_people_detection" name="robin_people_detection" output="screen" />
 	
 </launch>
