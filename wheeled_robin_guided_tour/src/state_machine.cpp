@@ -105,7 +105,7 @@ int main(int argc, char** argv) {
 				try {
 					listener.lookupTransform("/base_footprint", person_frame, ros::Time(0), transform);
 				} catch (tf::TransformException ex) {
-					ROS_ERROR("%s", ex.what());
+					//ROS_ERROR("%s", ex.what());
 					break;
 				}
 				tf::Vector3 distance = transform.getOrigin();
@@ -115,6 +115,7 @@ int main(int argc, char** argv) {
 				if(person_range <= base_range) { // person within range
 					createPoseFromParams("base", &(goal.target_pose));
 					client.sendGoal(goal);
+					ROS_INFO("Person within range of base detected");
 					st = APPROACH_PERSON;
 				}
 				break;
