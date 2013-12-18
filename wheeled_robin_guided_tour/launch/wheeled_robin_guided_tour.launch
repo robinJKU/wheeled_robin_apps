@@ -1,0 +1,30 @@
+<launch>
+	
+	# load parameters (such as coordinates of goals, etc.)
+	<rosparam file="$(find wheeled_robin_guided_tour)/launch/parameters.yaml" command="load" ns="goals" />
+	
+	# launch needed nodes
+	<include file="$(find robin_people_detection)/launch/robin_people_detection.launch" />
+	
+	<node pkg="wheeled_robin_guided_tour" name="state_machine" type="state_machine">
+		
+		# range (from base) to trigger area (triggering radius)
+		<param name="base_range" value="0.5" type="double" />
+		
+		# frame of identified person/group ("/dominant_person" or "/group")
+		<param name="person_frame" value="/dominant_person" type="string" />
+		
+		# validity duration for button events
+		<param name="button_duration" value="5.0" type="double" />
+		
+		# basename for goal parameters (e.g. "goal_1","goal_2", ... where "goal_" is basename)
+		<param name="goal_basename" value="goal_" type="double" />
+		
+		# absolute path to parent video folder
+		<param name="video_path" value="/home/USERNAME/Downloads" type="string" />
+		
+	</node>
+	
+	<node pkg="rosserial_python" name="serial_node.py" args="/dev/ttyACM0" />
+	
+</launch>
