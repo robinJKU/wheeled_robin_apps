@@ -66,8 +66,9 @@ int main(int argc, char** argv) {
 	std::string person_frame; // name of frame to person or group of persons
 	ros::param::get("person_frame", person_frame);
 	
-	std::string perso_threshold_frame; // name of frame of person position threshold
+	std::string person_threshold_frame; // name of frame of person position threshold
 	ros::param::get("person_threshold_frame", person_threshold_frame);
+	
 	double button_duration; // time for user to interact with robot
 	ros::param::get("button_duration", button_duration);
 	std::string goal_basename; // basename for goal parameter names (within goals namespace)
