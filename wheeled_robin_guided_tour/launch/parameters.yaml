@@ -1,0 +1,16 @@
+# static position definitions
+# start position
+start: {x: 0.0, y: 0.0, z: 0.0, q1: 0.0, q2: 0.0, q3: 0.0, q4: 1.0}
+
+# base position
+base: {x: 2.3555, y: 1.61, z: 0.0, q1: 0.0, q2: 0.0, q3: 0.0, q4: 1.0}
+
+# goals
+# labor tmech
+goal_1: {x: 12.84, y: 1.78, z: 0.0, q1: 0.0, q2: 0.0, q3: 0.0, q4: 1.0, folder: '/tmech'}
+# labor robin
+goal_2: {x: 23.45, y: 1.62, z: 0.0, q1: 0.0, q2: 0.0, q3: 0.0, q4: 1.0, folder: '/robin'}
+# labor desreg
+goal_3: {x: 0.0, y: 0.0, z: 0.0, q1: 0.0, q2: 0.0, q3: 0.0, q4: 0.0, folder: '/desreg'}
+# labor fluid
+goal_4: {x: 0.0, y: 0.0, z: 0.0, q1: 0.0, q2: 0.0, q3: 0.0, q4: 0.0, folder: '/fluid'}

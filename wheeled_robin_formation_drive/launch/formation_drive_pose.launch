@@ -8,7 +8,7 @@
     <arg name="disparity_processing" value="true"/>
     <arg name="disparity_registered_processing" value="true"/>
     <arg name="scan_processing" value="false"/>
-    <arg name="publish_tf" value="false" /><!--standard false; true if you dont work on the roomba-->
+    <arg name="publish_tf" value="true" /><!--standard false; true if you dont work on the roomba-->
   </include>
 
   <node name="ar_multi" pkg="ar_pose" type="ar_multi" respawn="false" output="screen">
@@ -31,7 +31,5 @@
     <remap from="/cmd_vel" to="/cmd_vel_mux/input/teleop" />
   </node>
 
-  <!--Starting rviz with predefined settings-->
-  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find wheeled_robin_formation_drive)/launch/rviz_formation.rviz"/>
 
 </launch>

@@ -18,7 +18,7 @@ int main(int argc, char** argv){
 	
 	tf::TransformListener listener;
 
-	ros::Rate rate(10.0);
+	ros::Rate rate(50.0);
 
 	while (node.ok()){
 
@@ -26,8 +26,9 @@ int main(int argc, char** argv){
 	  geometry_msgs::Twist vel_msg;
 	  
 	  try {
-	    listener.waitForTransform("base_footprint", goal_tf_name, ros::Time(0), ros::Duration(1.0) );
-	    listener.lookupTransform("base_footprint", goal_tf_name, ros::Time(0), transform);
+	    ros::Time now = ros::Time::now();
+	    listener.waitForTransform("base_footprint", goal_tf_name, now, ros::Duration(1.0) );
+	    listener.lookupTransform("base_footprint", goal_tf_name, now, transform);
 	    
 	    double r_euklid = sqrt(pow(transform.getOrigin().x(), 2) + pow(transform.getOrigin().y(), 2));
 
@@ -38,9 +39,9 @@ int main(int argc, char** argv){
 	      
 	    //} else {
 
-	      vel_msg.linear.x = 0.5 * r_euklid;
+	      vel_msg.linear.x = 0.5 * r_euklid*transform.getOrigin().x()/fabs(transform.getOrigin().x());
 	      vel_msg.angular.z = 4 * atan2(transform.getOrigin().y(), transform.getOrigin().x());
-		//ROS_INFO("%f-  %f--     %f", transform.getOrigin().x(), transform.getOrigin().y(), r_euklid);
+	      ROS_INFO("x off=%3.2f; y off=%3.2f; speed=%3.2f", transform.getOrigin().x(), transform.getOrigin().y(), r_euklid);
 	    //} //if(r_euklid)
 	    
 	    if(vel_msg.linear.x > 1.5) vel_msg.linear.x = 1.5;
@@ -51,7 +52,8 @@ int main(int argc, char** argv){
 	    vel_msg.linear.x = 0;
 	    vel_msg.angular.z = 0;
 	  }
-
+	 // vel_msg.linear.x = 0;
+	  vel_msg.angular.z = 0;
 	  vel_msg_pub.publish(vel_msg);
 	  ros::spinOnce();
 	  rate.sleep();
