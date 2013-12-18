@@ -4,7 +4,7 @@
 
 int main(int argc, char** argv){
 	ros::init(argc, argv, "vel_control");
-
+/*
 	std::string goal_tf_name;
 	double p_lin, p_ang;
 
@@ -53,11 +53,13 @@ int main(int argc, char** argv){
 	    vel_msg.angular.z = 0;
 	  }
 	 // vel_msg.linear.x = 0;
+	  vel_msg.linear.x = 0;
 	  vel_msg.angular.z = 0;
 	  vel_msg_pub.publish(vel_msg);
 	  ros::spinOnce();
 	  rate.sleep();
 	}
-	
+	*/
 	return 0;
+	
 };

@@ -25,11 +25,20 @@
     <param name="x_offset" type="double" value="1.0"/>
     <param name="y_offset" type="double" value="1.0"/>
   </node>
+
   <node name="calc_vel" pkg="wheeled_robin_formation_drive" type="vel_control" output="screen">
     <param name="p_lin" type="double" value="4.0"/>
     <param name="p_ang" type="double" value="0.5"/>
     <remap from="/cmd_vel" to="/cmd_vel_mux/input/teleop" />
   </node>
+  
+  <!-- Map server -->
+  <arg name="map_file" default="$(find wheeled_robin_formation_drive)/maps/empty_map.yaml"/>
+  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
 
+  <node pkg="tf" type="static_transform_publisher" name="transform_map_odom" args="50 50 0 0 0 0 /map /odom 100"/> 
+  <include file="$(find wheeled_robin_bringup)/launch/minimal_fake.launch"/>
+
+  <include file="$(find turtlebot_navigation)/launch/includes/move_base.launch.xml"/>
 
 </launch>
