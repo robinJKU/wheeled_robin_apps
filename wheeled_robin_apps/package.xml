@@ -11,6 +11,7 @@
   <author email="klemens.springer@jku.at">Klemens Springer</author>
 
   <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>ros-hydro-joystick-drivers</build_depend>
   <run_depend>wheeled_robin_teleop</run_depend>
   <run_depend>wheeled_robin_core_apps</run_depend>
 
