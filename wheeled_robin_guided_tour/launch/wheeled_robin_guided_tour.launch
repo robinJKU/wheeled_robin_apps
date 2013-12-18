@@ -18,7 +18,7 @@
 		<param name="button_duration" value="5.0" type="double" />
 		
 		# basename for goal parameters (e.g. "goal_1","goal_2", ... where "goal_" is basename)
-		<param name="goal_basename" value="goal_" type="double" />
+		<param name="goal_basename" value="goal_" type="string" />
 		
 		# absolute path to parent video folder
 		<param name="video_path" value="/home/USERNAME/Downloads" type="string" />
