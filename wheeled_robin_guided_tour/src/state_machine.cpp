@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
 	ros::Subscriber button_sub = nh.subscribe<std_msgs::Bool>("/pushed", 1, buttonCb);
 	
 	// client for navigation goals
-	actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> client("move_base/goal", true);
+	actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> client("move_base", true);
 	//client.waitForServer();
 	
 	// init state machine
@@ -264,7 +264,7 @@ void createPoseFromParams(std::string param_name, geometry_msgs::PoseStamped* po
  * 
  * OUTPUT:	none
  */
- void buttonCb(std_msgs::Bool msg) {
-	 last_button_msg_time = ros::Time::now();
-	 last_button_state = msg.data;
- }
+void buttonCb(std_msgs::Bool msg) {
+	last_button_msg_time = ros::Time::now();
+	last_button_state = msg.data;
+}
