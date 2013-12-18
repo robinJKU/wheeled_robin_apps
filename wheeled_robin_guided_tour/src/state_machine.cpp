@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
 	tf::StampedTransform transform;
 	
 	// read parameters
-	double base_range = 0.; // range around base to trigger question for tour
+	double base_range; // range around base to trigger question for tour
 	ros::param::get("base_range", base_range);
 	base_range = base_range*base_range; // cheaper to compare (no sqrt)
 	std::string person_frame; // name of frame to person or group of persons
@@ -203,16 +203,13 @@ int main(int argc, char** argv) {
 					ss << goal_basename;
 					ss << current_goal;
 					if(ros::param::has(ss.str().c_str())) { // another goal exists
-						std::stringstream ss;
-						ss << goal_basename;
-						ss << current_goal;
 						createPoseFromParams(ss.str().c_str(), &(goal.target_pose));
 						client.sendGoal(goal);
 						st = APPROACH_PRESENTATION;
+						ROS_INFO("Switching to state %d", st);
 						std_msgs::String say_continue;
 						say_continue.data = "Okay, lets continue with the next stop.";
 						speech_pub.publish(say_continue);
-						ROS_INFO("Switching to state %d", st);
 					} else {
 						st = TALK_BYE;
 						ROS_INFO("Switching to state %d", st);
@@ -264,7 +261,7 @@ void createPoseFromParams(std::string param_name, geometry_msgs::PoseStamped* po
  * the content and the receive time in global variables as the bool 
  * message does not contain a header structure.
  * 
- * INPUT:	std_msgs::bool msg: message
+ * INPUT:	std_msgs::Bool msg: message
  * 
  * OUTPUT:	none
  */
