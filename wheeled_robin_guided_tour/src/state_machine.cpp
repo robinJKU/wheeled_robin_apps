@@ -65,6 +65,9 @@ int main(int argc, char** argv) {
 	base_range = base_range*base_range; // cheaper to compare (no sqrt)
 	std::string person_frame; // name of frame to person or group of persons
 	ros::param::get("person_frame", person_frame);
+	
+	std::string perso_threshold_frame; // name of frame of person position threshold
+	ros::param::get("person_threshold_frame", person_threshold_frame);
 	double button_duration; // time for user to interact with robot
 	ros::param::get("button_duration", button_duration);
 	std::string goal_basename; // basename for goal parameter names (within goals namespace)
@@ -103,7 +106,7 @@ int main(int argc, char** argv) {
 			case WAIT_PERSON: {
 				// tf from robot to base footprint of person at /person
 				try {
-					listener.lookupTransform("/base_footprint", person_frame, ros::Time(0), transform);
+					listener.lookupTransform(person_threshold_frame, person_frame, ros::Time(0), transform);
 				} catch (tf::TransformException ex) {
 					//ROS_ERROR("%s", ex.what());
 					break;
