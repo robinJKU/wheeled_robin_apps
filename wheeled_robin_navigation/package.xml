@@ -7,8 +7,8 @@
   <maintainer email="stephan.hofstaetter@gmail.com">Stephan Hofstaetter</maintainer>
   <license>BSD</license>
   <url type="website">http://ros.org/wiki/wheeled_robin_navigation</url>
-  <url type="repository">https://github.com/robinJKU/wheeled_robin_navigation</url>
-  <url type="bugtracker">https://github.com/robinJKU/wheeled_robin_navigation/issues</url>
+  <url type="repository">https://github.com/robinJKU/wheeled_robin_apps/wheeled_robin_navigation</url>
+  <url type="bugtracker">https://github.com/robinJKU/wheeled_robin_apps/wheeled_robin_navigation/issues</url>
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>turtlebot_navigation</build_depend>
