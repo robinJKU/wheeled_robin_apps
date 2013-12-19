@@ -1,4 +1,6 @@
 <launch>
+  <include file="$(find wheeled_robin_bringup)/launch/minimal.launch"/>
+
   <!--Launching the Kinect, with most of its features deactivated-->
   <include file="$(find turtlebot_bringup)/launch/3dsensor.launch">
     <arg name="rgb_processing" value="true"/><!--ar_pose needs rgb_data-->
@@ -8,7 +10,6 @@
     <arg name="disparity_processing" value="true"/>
     <arg name="disparity_registered_processing" value="true"/>
     <arg name="scan_processing" value="false"/>
-    <arg name="publish_tf" value="false" />
   </include>
 
   <node name="ar_multi" pkg="ar_pose" type="ar_multi" respawn="false" output="screen">
@@ -37,8 +38,8 @@
   <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
 
   <node pkg="tf" type="static_transform_publisher" name="transform_map_odom" args="50 50 0 0 0 0 /map /odom 100"/> 
-  <include file="$(find wheeled_robin_bringup)/launch/minimal_fake.launch"/>
+  
 
-  <include file="$(find turtlebot_navigation)/launch/includes/move_base.launch.xml"/>
+  <include file="$(find wheeled_robin_navigation)/launch/includes/move_base.launch.xml"/>
 
 </launch>

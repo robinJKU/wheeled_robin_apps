@@ -2,12 +2,14 @@
 #include <tf/transform_listener.h>
 #include <tf/transform_broadcaster.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <std_msgs/String.h>
 #include <math.h>
 
 #define _USE_MATH_DEFINES
 #define WAITING_TIME 3.0f
 #define MAX_DIST 0.1f
 #define SEARCH_TIME_SEC 60
+#define RATE 10
 
 
 int main(int argc, char** argv){
@@ -31,7 +33,7 @@ int main(int argc, char** argv){
   tf::StampedTransform last_o2m;
   ros::Publisher pos_msg_pub = node.advertise<geometry_msgs::PoseStamped>("move_base_simple/goal", 10);
   
-  ros::Rate rate(1.0);
+  ros::Rate rate(RATE);
   bool searching = false , initialized = false;
   ros::Time search_start;
   
@@ -109,6 +111,11 @@ int main(int argc, char** argv){
       tf::Matrix3x3(trans.getRotation()).getRPY(roll, pitch, yaw);
       tf::Quaternion quat(tf::Vector3(0,0,1), yaw - M_PI / 2.0);
       
+      tf::StampedTransform fixedTrans;
+      fixedTrans.setOrigin(tf::Vector3(trans.getOrigin().x(),trans.getOrigin().y(),0));
+      fixedTrans.setRotation(quat);
+      broadcast.sendTransform(tf::StampedTransform(fixedTrans, ros::Time::now(), "map", "fixed_goal"));
+      
       msg.pose.position.x = trans.getOrigin().x();
       msg.pose.position.y = trans.getOrigin().y();
       msg.pose.position.z = 0;
@@ -121,7 +128,7 @@ int main(int argc, char** argv){
       msg.header.frame_id = "map";
       msg.header.stamp = ros::Time::now();
       
-      pos_msg_pub.publish(msg);
+      //pos_msg_pub.publish(msg);
     }
     catch (tf::TransformException ex)
     {
