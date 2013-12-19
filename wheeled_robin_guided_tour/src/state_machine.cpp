@@ -223,7 +223,7 @@ int main(int argc, char** argv) {
 					ss << goal_basename;
 					ss << current_goal;
 					ROS_INFO("Next goal is: %s", ss.str().c_str());
-					if(ros::param::has(ss.str().c_str())) { // another goal exists
+					if(ros::param::has((("/goals/"+ss.str()+"/x").c_str())) { // another goal exists
 						createPoseFromParams(ss.str().c_str(), &(goal.target_pose));
 						client.sendGoal(goal);
 						st = APPROACH_PRESENTATION;
