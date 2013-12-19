@@ -102,9 +102,9 @@ int main(int argc, char** argv) {
 	check << ss;
 	check << "/x";
 	if(ros::param::has(check.str().c_str())) {
-		ROS_INFO("Parameter exists");
+		ROS_INFO("Parameter %s exists", check.str().c_str());
 	} else {
-		ROS_INFO("Parameter does not exist");
+		ROS_INFO("Parameter %s does not exist", check.str().c_str());
 	}
 	ros::spinOnce();
 	return 0;
