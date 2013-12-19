@@ -32,7 +32,7 @@
 		<param name="goal_basename" value="goal_" type="string" />
 		
 		# absolute path to parent video folder
-		<param name="video_path" value="/home/USERNAME/Downloads" type="string" />
+		<param name="video_path" value="/home/turtlebot/rob_video" type="string" />
 		
 	</node>
 	
