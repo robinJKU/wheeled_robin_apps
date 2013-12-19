@@ -122,11 +122,14 @@ int main(int argc, char** argv) {
 				try {
 					listener.lookupTransform(person_threshold_frame, person_frame, ros::Time(0), transform);
 				} catch (tf::TransformException ex) {
-					//ROS_ERROR("%s", ex.what());
+					ROS_ERROR("%s", ex.what());
 					break;
 				}
 				tf::Vector3 distance = transform.getOrigin();
 				double person_range = distance.length2();
+				
+				ROS_INFO("person_range = %f", person_range);
+				ROS_INFO("base_range = %f", base_range);
 				
 				// check if person is within range of base to trigger question for tour
 				if(person_range <= base_range) { // person within range
