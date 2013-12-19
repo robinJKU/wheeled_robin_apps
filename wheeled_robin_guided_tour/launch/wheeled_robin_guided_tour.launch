@@ -26,7 +26,7 @@
 		<param name="person_threshold_frame" value="/person_threshold_frame" type="string" />
 		
 		# validity duration for button events
-		<param name="button_duration" value=20.0 type="double" />
+		<param name="button_duration" value="20.0" type="double" />
 		
 		# basename for goal parameters (e.g. "goal_1","goal_2", ... where "goal_" is basename)
 		<param name="goal_basename" value="goal_" type="string" />
