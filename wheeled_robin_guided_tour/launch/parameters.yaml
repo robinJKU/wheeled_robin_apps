@@ -13,4 +13,4 @@ goal_1: {x: 7.5, y: 1.96, z: 0.0, q1: 0.0, q2: 0.0, q3: 0.0, q4: 1.0, folder: '/
 # labor desreg
 goal_2: {x: 13.8, y: 1.9, z: 0.0, q1: 0.0, q2: 0.0, q3: 0.0, q4: 1.0, folder: '/diplomanden'}
 # labor fluid
-goal_3: {x: 24.0, y: 1.6, z: 0.0, q1: 0.0, q2: 0.0, q3: -0.707, q4: 0.707, folder: '/bib'}
+goal_3: {x: 24.0, y: 1.6, z: 0.0, q1: 0.0, q2: 1.0, q3: 0.0, q4: 0.0, folder: '/bib'}
