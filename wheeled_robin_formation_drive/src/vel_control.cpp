@@ -2,23 +2,28 @@
 #include <tf/transform_listener.h>
 #include "geometry_msgs/Twist.h"
 
+#define RATE 20
+
 int main(int argc, char** argv){
 	ros::init(argc, argv, "vel_control");
 
 	std::string goal_tf_name;
-	double p_lin, p_ang;
+	double p_lin, p_ang, vmax_lin,vmax_ang, proj_tf_frame;
 
 	ros::NodeHandle node;
 
 	node.param<std::string>("goal_frame", goal_tf_name, "goal");
-	node.param("p_lin", p_lin, 4.0);
-	node.param("p_ang", p_ang, 0.5);
+	node.param<std::string>("projection_frame", proj_tf_frame, "fixed_goal");
+	node.param("p_lin", p_lin, 0.5);
+	node.param("p_ang", p_ang, 1);
+	node.param("vmax_lin", vmax_lin, 0.3);
+	node.param("vmax_ang", vmax_ang, 0.5);
 
 	ros::Publisher vel_msg_pub = node.advertise<geometry_msgs::Twist>("cmd_vel", 10);
 	
 	tf::TransformListener listener;
 
-	ros::Rate rate(20.0);
+	ros::Rate rate(RATE);
 
 	while (node.ok()){
 
@@ -27,45 +32,33 @@ int main(int argc, char** argv){
 	  
 	  try {
 	    ros::Time now = ros::Time::now();
-	    //listener.waitForTransform("base_footprint", goal_tf_name, now, ros::Duration(1.0) );
-	    //listener.lookupTransform("base_footprint", goal_tf_name, now, transform);
-	    listener.waitForTransform("base_footprint", "fixed_goal", now, ros::Duration(1.0) );
-	    listener.lookupTransform("base_footprint", "fixed_goal", now, transform);
-	    
-	    double r_euklid = sqrt(pow(transform.getOrigin().x(), 2) + pow(transform.getOrigin().y(), 2));
 
-	    //if(r_euklid < 0.05){
-	      
-	    // vel_msg.linear.x = 0;
-	      //vel_msg.angular.z = 4 * transform.getRotation().z();
-	      
-	    //} else {
-	      if(fabs(transform.getOrigin().x()) > 0.1)
-	      {
-		vel_msg.linear.x = 2 * transform.getOrigin().x();
-	      }
-	      else
-	      {
-		vel_msg.linear.x = 0;
-	      }
-	      tfScalar roll, pitch, yaw;
-	      tf::Matrix3x3(transform.getRotation()).getRPY(roll, pitch, yaw);
-	      vel_msg.angular.z = yaw;
-	      ROS_INFO("x off=%3.2f; y off=%3.2f; speed=%3.2f", transform.getOrigin().x(), transform.getOrigin().y(), r_euklid);
-	    //} //if(r_euklid)
-	    
-	    if(fabs(vel_msg.linear.x) > 0.3) vel_msg.linear.x = 0.3*vel_msg.linear.x/fabs(vel_msg.linear.x);
-	    if(fabs(vel_msg.angular.z) > 0.5) vel_msg.angular.z = 0.5*vel_msg.angular.z/fabs(vel_msg.angular.z);
+	    listener.waitForTransform("base_footprint", proj_tf_frame, now, ros::Duration(1.0) );
+	    listener.lookupTransform("base_footprint", proj_tf_frame, now, transform);
+
+	    if(fabs(transform.getOrigin().x()) > 0.2)
+	    {
+	      vel_msg.linear.x = p_lin * transform.getOrigin().x();
+	    }
+	    else
+	    {
+	      vel_msg.linear.x = 0;
+	    }
+	    tfScalar roll, pitch, yaw;
+	    tf::Matrix3x3(transform.getRotation()).getRPY(roll, pitch, yaw);
+	    vel_msg.angular.z = p_ang * yaw;
+
+	    if(fabs(vel_msg.linear.x) > vmax_lin) vel_msg.linear.x = vmax_lin * vel_msg.linear.x/fabs(vel_msg.linear.x);
+	    if(fabs(vel_msg.angular.z) > vmax_ang) vel_msg.angular.z = vmax_ang * vel_msg.angular.z/fabs(vel_msg.angular.z);
 	    
 	  } catch (tf::TransformException ex) {
-	    ROS_INFO("%s",ex.what());
+	    ROS_INFO("No pattern detected yet!");
 	    vel_msg.linear.x = 0;
 	    vel_msg.angular.z = 0;
-	  }
-	 // vel_msg.linear.x = 0;
-	  
+	  }	  
 
 	  vel_msg_pub.publish(vel_msg);
+	  
 	  ros::spinOnce();
 	  rate.sleep();
 	}

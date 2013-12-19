@@ -6,10 +6,10 @@
 #include <math.h>
 
 #define _USE_MATH_DEFINES
-#define WAITING_TIME 3.0f
-#define MAX_DIST 0.1f
+#define WAITING_TIME 5.0f
+#define MAX_DIST 0.2f
 #define SEARCH_TIME_SEC 60
-#define RATE 10
+#define RATE 20
 
 
 int main(int argc, char** argv){
@@ -18,14 +18,15 @@ int main(int argc, char** argv){
     ROS_ERROR("Error in argument count");
   }
   
-  std::string marker_tf_name, goal_tf_name, dist_x_str, dist_z_str;
+  std::string marker_tf_name, goal_tf_name, proj_tf_frame;
   double dist_x, dist_z;
  
   ros::NodeHandle node;
   
   node.param<std::string>("marker_frame", marker_tf_name, "master_pattern");
   node.param<std::string>("goal_frame", goal_tf_name, "goal");
-  node.param("x_offset", dist_z, 1.0);
+  node.param<std::string>("projection_frame", proj_tf_frame, "fixed_goal");
+  node.param("x_offset", dist_z, 0.5);
   node.param("y_offset", dist_x, 0.0);
     
   tf::TransformBroadcaster broadcast;
@@ -49,7 +50,6 @@ int main(int argc, char** argv){
 
       tf::Transform marker2goal;     
       marker2goal.setOrigin( tf::Vector3(dist_x, 0.0, dist_z) );
-      //marker2goal.setOrigin( tf::Vector3(-1,0,0));
       marker2goal.setRotation( tf::Quaternion(tf::Vector3(0,0,1), 0) );
       
       tf::Transform odom2goal;
@@ -57,21 +57,21 @@ int main(int argc, char** argv){
       
       last_o2m = odom2marker;
       broadcast.sendTransform(tf::StampedTransform(marker2goal, ros::Time::now(), marker_tf_name, goal_tf_name));
-      //broadcast.sendTransform(tf::StampedTransform(odom2goal, ros::Time::now(), "odom", goal_tf_name));
             
       searching = false;
       initialized = true;
     }
     catch (tf::TransformException ex)
     {
-      ROS_INFO("Master Robot was not found! Recovery Behaviour started!");
+      
       tf::StampedTransform odom2base;
       listener.lookupTransform("odom", "base_footprint", ros::Time(0), odom2base);
       tf::Vector3 diff_origin = odom2base.getOrigin()-last_o2m.getOrigin();
 
       if (initialized)
       {
-	if(true)//diff_origin.length() >= MAX_DIST)
+	ROS_INFO("Master pattern was not found! Recovery Behaviour started!");
+	if(diff_origin.length() >= MAX_DIST)
 	{
 	    broadcast.sendTransform(tf::StampedTransform(last_o2m, ros::Time::now(), "odom", goal_tf_name));
 	} 
@@ -88,7 +88,7 @@ int main(int argc, char** argv){
 	    {
 		tf::Transform rot_z;     
 		rot_z.setOrigin( tf::Vector3(0.0, 0.0, 0.0) );
-		rot_z.setRotation( tf::Quaternion(tf::Vector3(0,0,1), M_PI/2) );
+		rot_z.setRotation( tf::Quaternion(tf::Vector3(0,0,1), M_PI/4) );
 		
 		broadcast.sendTransform(tf::StampedTransform(odom2base*rot_z, ros::Time::now(), "odom", goal_tf_name));
 	    }
@@ -100,7 +100,7 @@ int main(int argc, char** argv){
       } // if(initialized)
     } // catch
     
-    geometry_msgs::PoseStamped msg;
+    //geometry_msgs::PoseStamped msg;
     try
     {
       tf::StampedTransform trans;
@@ -110,12 +110,11 @@ int main(int argc, char** argv){
       tfScalar roll, pitch, yaw;
       tf::Matrix3x3(trans.getRotation()).getRPY(roll, pitch, yaw);
       tf::Quaternion quat(tf::Vector3(0,0,1), yaw - M_PI / 2.0);
-      
       tf::StampedTransform fixedTrans;
       fixedTrans.setOrigin(tf::Vector3(trans.getOrigin().x(),trans.getOrigin().y(),0));
       fixedTrans.setRotation(quat);
-      broadcast.sendTransform(tf::StampedTransform(fixedTrans, ros::Time::now(), "map", "fixed_goal"));
-      
+      broadcast.sendTransform(tf::StampedTransform(fixedTrans, ros::Time::now(), "map", proj_tf_frame));
+      /*
       msg.pose.position.x = trans.getOrigin().x();
       msg.pose.position.y = trans.getOrigin().y();
       msg.pose.position.z = 0;
@@ -128,7 +127,7 @@ int main(int argc, char** argv){
       msg.header.frame_id = "map";
       msg.header.stamp = ros::Time::now();
       
-      //pos_msg_pub.publish(msg);
+      //pos_msg_pub.publish(msg);*/
     }
     catch (tf::TransformException ex)
     {
