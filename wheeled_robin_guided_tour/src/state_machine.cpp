@@ -284,7 +284,7 @@ void createPoseFromParams(std::string param_name, geometry_msgs::PoseStamped* po
  * OUTPUT:	none
  */
 void buttonCb(std_msgs::Bool msg) {
-	ROS_INFO("Button event");
 	last_button_msg_time = ros::Time::now();
 	last_button_state = msg.data;
+	ROS_INFO("Button event, %d", last_button_state);
 }
