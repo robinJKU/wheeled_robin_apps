@@ -77,6 +77,7 @@ int main(int argc, char** argv){
 	} 
 	else
 	{
+	
 	    if(!searching)
 	    {
 		searching = true;
@@ -89,7 +90,7 @@ int main(int argc, char** argv){
 		tf::Transform rot_z;     
 		rot_z.setOrigin( tf::Vector3(0.0, 0.0, 0.0) );
 		rot_z.setRotation( tf::Quaternion(tf::Vector3(0,0,1), M_PI/4) );
-		
+		ROS_INFO("Turning robot to search master pattern!");
 		broadcast.sendTransform(tf::StampedTransform(odom2base*rot_z, ros::Time::now(), "odom", goal_tf_name));
 	    }
 	    else
@@ -101,6 +102,8 @@ int main(int argc, char** argv){
     } // catch
     
     //geometry_msgs::PoseStamped msg;
+    ros::spinOnce();
+    
     try
     {
       tf::StampedTransform trans;
