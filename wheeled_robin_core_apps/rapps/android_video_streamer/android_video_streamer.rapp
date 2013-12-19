@@ -1,0 +1,11 @@
+display:      video_streamer
+description:  Drive a turtlebot from Android with a touch joystick and video feed.
+platform:     linux.ros.turtlebot
+launch:       video_player/video_player.launch
+interface:    wheeled_robin_core_apps/android_video_streamer.interface
+icon:         wheeled_robin_core_apps/android_video_streamer_bubble_icon.png
+pairing_clients:
+  - type: android
+    manager:
+      api-level: 9
+      intent-action: com.github.rosjava.android_apps.teleop.MainActivity
