@@ -64,38 +64,39 @@ int main(int argc, char** argv){
     catch (tf::TransformException ex)
     {
       
-      tf::StampedTransform odom2base;
-      listener.lookupTransform("odom", "base_footprint", ros::Time(0), odom2base);
-      tf::Vector3 diff_origin = odom2base.getOrigin()-last_o2m.getOrigin();
+      tf::StampedTransform map2base;
+      listener.lookupTransform("map", "base_footprint", ros::Time(0), map2base);
+      double diff_origin = map2base.getOrigin().x()-last_o2m.getOrigin().x();
 
       if (initialized)
       {
 	ROS_INFO("Master pattern was not found! Recovery Behaviour started!");
-	if(diff_origin.length() >= MAX_DIST)
+	if(diff_origin >= MAX_DIST)
 	{
-	    broadcast.sendTransform(tf::StampedTransform(last_o2m, ros::Time::now(), "odom", goal_tf_name));
+	    broadcast.sendTransform(tf::StampedTransform(last_o2m, ros::Time::now(), "map", goal_tf_name));
+	    ROS_INFO("Old marker position published");
 	} 
 	else
 	{
-	
-	    if(!searching)
+	    ROS_INFO("Turning started!");
+	    /*if(!searching)
 	    {
 		searching = true;
 		search_start = ros::Time::now();
 		
 	    }
 	    
-	    if((ros::Time::now() - search_start).sec < SEARCH_TIME_SEC)
+	    if((ros::Time::now() - search_start).sec < SEARCH_TIME_SEC)*/
 	    {
 		tf::Transform rot_z;     
 		rot_z.setOrigin( tf::Vector3(0.0, 0.0, 0.0) );
 		rot_z.setRotation( tf::Quaternion(tf::Vector3(0,0,1), M_PI/4) );
 		ROS_INFO("Turning robot to search master pattern!");
-		broadcast.sendTransform(tf::StampedTransform(odom2base*rot_z, ros::Time::now(), "odom", goal_tf_name));
+		broadcast.sendTransform(tf::StampedTransform(map2base*rot_z, ros::Time::now(), "map", goal_tf_name));
 	    }
-	    else
+	    //else
 	    {
-		broadcast.sendTransform(tf::StampedTransform(odom2base, ros::Time::now(), "odom", goal_tf_name));
+	//	broadcast.sendTransform(tf::StampedTransform(odom2base, ros::Time::now(), "odom", goal_tf_name));
 	    } // else
 	} // else
       } // if(initialized)
@@ -110,6 +111,7 @@ int main(int argc, char** argv){
       listener.waitForTransform("map", goal_tf_name, ros::Time(0), ros::Duration(WAITING_TIME));
       listener.lookupTransform("map", goal_tf_name, ros::Time(0), trans);
       
+
       tfScalar roll, pitch, yaw;
       tf::Matrix3x3(trans.getRotation()).getRPY(roll, pitch, yaw);
       tf::Quaternion quat(tf::Vector3(0,0,1), yaw - M_PI / 2.0);
@@ -117,6 +119,7 @@ int main(int argc, char** argv){
       fixedTrans.setOrigin(tf::Vector3(trans.getOrigin().x(),trans.getOrigin().y(),0));
       fixedTrans.setRotation(quat);
       broadcast.sendTransform(tf::StampedTransform(fixedTrans, ros::Time::now(), "map", proj_tf_frame));
+      last_o2m = trans;
       /*
       msg.pose.position.x = trans.getOrigin().x();
       msg.pose.position.y = trans.getOrigin().y();
