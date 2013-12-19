@@ -2,7 +2,12 @@
  * Node that uses the WheeledRobin robot to perform a guided tour
  * with multiple stops. It provides interfaces to nodes for 
  * navigation, speech synthesis, physical user interfaces and displaying 
- * graphics and uses a state machine to manage the workflow.  
+ * graphics and uses a state machine to manage the workflow.
+ * 
+ * JKU Linz
+ * Institute for Robotics
+ * Alexander Reiter, Armin Steinhauser
+ * December 2013
  */
 
 #include <ros/ros.h>
@@ -16,6 +21,8 @@
 #include <stdio.h>
 #include <string>
 #include <sstream> 
+
+#include "video_player/PlayVideoSrv.h"
 
 // global variables
 ros::Time last_button_msg_time;	// last time a button has been pressed
@@ -44,8 +51,11 @@ int main(int argc, char** argv) {
 	ros::Subscriber button_sub = nh.subscribe<std_msgs::Bool>("/pushed", 1, buttonCb);
 	
 	// client for navigation goals
-	actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> client("move_base/goal", true);
-	//client.waitForServer();
+	actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> client("move_base", true);
+	
+	// client for video player and service variable
+	ros::ServiceClient client = n.serviceClient<video_player::PlayVideoSrv>("/wheeled_robin/application/play_video");
+        video_player::PlayVideoSrv srv;
 	
 	// init state machine
 	state st = START;
@@ -55,11 +65,15 @@ int main(int argc, char** argv) {
 	tf::StampedTransform transform;
 	
 	// read parameters
-	double base_range = 0.; // range around base to trigger question for tour
+	double base_range; // range around base to trigger question for tour
 	ros::param::get("base_range", base_range);
 	base_range = base_range*base_range; // cheaper to compare (no sqrt)
 	std::string person_frame; // name of frame to person or group of persons
 	ros::param::get("person_frame", person_frame);
+	
+	std::string person_threshold_frame; // name of frame of person position threshold
+	ros::param::get("person_threshold_frame", person_threshold_frame);
+	
 	double button_duration; // time for user to interact with robot
 	ros::param::get("button_duration", button_duration);
 	std::string goal_basename; // basename for goal parameter names (within goals namespace)
@@ -72,6 +86,10 @@ int main(int argc, char** argv) {
 	last_button_msg_time = ros::Time(0);
 	
 	move_base_msgs::MoveBaseGoal goal;
+	goal.target_pose.header.frame_id = "map";
+	
+	// wait for other nodes to start up
+	ros::Duration(10).sleep();
 	
 	while(ros::ok()) {
 		switch(st) {
@@ -85,6 +103,7 @@ int main(int argc, char** argv) {
 			case RETURN_START: {
 				if (client.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
 					st = WAIT_PERSON;
+					ROS_INFO("Reached start position");
 					ROS_INFO("Switching to state %d", st);
 				}
 				current_goal = 0;
@@ -93,9 +112,9 @@ int main(int argc, char** argv) {
 			case WAIT_PERSON: {
 				// tf from robot to base footprint of person at /person
 				try {
-					listener.lookupTransform("/base_footprint", person_frame, ros::Time(0), transform);
+					listener.lookupTransform(person_threshold_frame, person_frame, ros::Time(0), transform);
 				} catch (tf::TransformException ex) {
-					ROS_ERROR("%s", ex.what());
+					//ROS_ERROR("%s", ex.what());
 					break;
 				}
 				tf::Vector3 distance = transform.getOrigin();
@@ -105,12 +124,15 @@ int main(int argc, char** argv) {
 				if(person_range <= base_range) { // person within range
 					createPoseFromParams("base", &(goal.target_pose));
 					client.sendGoal(goal);
+					ROS_INFO("Person within range of base detected");
+					st = APPROACH_PERSON;
 				}
 				break;
 			}
 			case APPROACH_PERSON: {
 				if (client.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) { // goal reached
 					st = ASK_PERSON;
+					ROS_INFO("Reached person");
 					ROS_INFO("Switching to state %d", st);
 				}
 				break;
@@ -125,22 +147,24 @@ int main(int argc, char** argv) {
 				break;
 			}
 			case WAIT_BUTTON_TOUR: {
-				if(ros::Time::now() - ask_time > ros::Duration(button_duration)) {
+				if(ros::Time::now() - ask_time > ros::Duration(button_duration)) { // no tour requested
+					std_msgs::String say_nothanks;
+					say_nothanks.data = "Thanks for wasting my time. Good bye.";
+					speech_pub.publish(say_nothanks);
+					st = RETURN_START;
+					ROS_INFO("No tour requested.");
+					ROS_INFO("Switching to state %d", st);
+				} else { // waiting for user
 					if(last_button_msg_time > ask_time && last_button_state) { // tour requested
-						st = APPROACH_PRESENTATION;
 						std::stringstream ss;
 						ss << goal_basename;
 						ss << current_goal;
 						createPoseFromParams(ss.str().c_str(), &(goal.target_pose));
 						client.sendGoal(goal);
+						ROS_INFO("Tour requested");
+						st = APPROACH_PRESENTATION;
 						ROS_INFO("Switching to state %d", st);
-					} 
-				} else { // no tour requested
-					std_msgs::String say_nothanks;
-					say_nothanks.data = "Thanks for wasting my time. Good bye.";
-					speech_pub.publish(say_nothanks);
-					st = RETURN_START;
-					ROS_INFO("Switching to state %d", st);
+					}
 				}
 				break;
 			}
@@ -151,14 +175,18 @@ int main(int argc, char** argv) {
 				}
 				break;
 			case PRESENT:
-				std_msgs::String video_path;
 				std::stringstream ss;
 				ss << "/goals/";
 				ss << goal_basename;
 				ss << current_goal;
 				ss << "/folder";
-				ros::param::get("goal_basename", video_path.data);
-				video_path.data = video_path.data + video_path.data;
+				ros::param::get(ss.str().c_str(), srv.request.videoPath);
+			        if (client.call(srv)){
+			                ROS_INFO("Presentation successful");
+			        } else {
+			                ROS_ERROR("Presentation failed");
+			        }
+			        st = ASK_REPETITION;
 				break;
 			}
 			case ASK_REPETITION: {
@@ -171,9 +199,10 @@ int main(int argc, char** argv) {
 				break;
 			}
 			case WAIT_BUTTON_REPETITION: {
-				if(ros::Time::now() - ask_time > ros::Duration(button_duration)) {
+				if(ros::Time::now() - ask_time <= ros::Duration(button_duration)) { // waiting for user
 					if(last_button_msg_time > ask_time && last_button_state) { // repetition requested
 						st = PRESENT;
+						ROS_INFO("Button pressed");
 						ROS_INFO("Switching to state %d", st);
 					} 
 				} else { // no repetition requested
@@ -182,16 +211,13 @@ int main(int argc, char** argv) {
 					ss << goal_basename;
 					ss << current_goal;
 					if(ros::param::has(ss.str().c_str())) { // another goal exists
-						std::stringstream ss;
-						ss << goal_basename;
-						ss << current_goal;
 						createPoseFromParams(ss.str().c_str(), &(goal.target_pose));
 						client.sendGoal(goal);
 						st = APPROACH_PRESENTATION;
+						ROS_INFO("Switching to state %d", st);
 						std_msgs::String say_continue;
 						say_continue.data = "Okay, lets continue with the next stop.";
 						speech_pub.publish(say_continue);
-						ROS_INFO("Switching to state %d", st);
 					} else {
 						st = TALK_BYE;
 						ROS_INFO("Switching to state %d", st);
@@ -243,11 +269,11 @@ void createPoseFromParams(std::string param_name, geometry_msgs::PoseStamped* po
  * the content and the receive time in global variables as the bool 
  * message does not contain a header structure.
  * 
- * INPUT:	std_msgs::bool msg: message
+ * INPUT:	std_msgs::Bool msg: message
  * 
  * OUTPUT:	none
  */
- void buttonCb(std_msgs::Bool msg) {
-	 last_button_msg_time = ros::Time::now();
-	 last_button_state = msg.data;
- }
+void buttonCb(std_msgs::Bool msg) {
+	last_button_msg_time = ros::Time::now();
+	last_button_state = msg.data;
+}

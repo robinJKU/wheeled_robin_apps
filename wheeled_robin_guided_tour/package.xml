@@ -10,7 +10,7 @@
 
 	<url type="website">http://wiki.ros.org/wheeled_robin_guided_tour</url>
 	<author email="ros@dualspace.at">Alexander Reiter</author>
-	<author email="nonori@gmail.com">Lord Armin Steinhauser</author>
+	<author email="nonori@gmail.com">Armin Steinhauser</author>
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>geometry_msgs</build_depend>
@@ -18,11 +18,15 @@
   <build_depend>roscpp</build_depend>
   <build_depend>std_msgs</build_depend>
   <build_depend>tf</build_depend>
+  <build_depend>video_player</build_depend>
+  
   <run_depend>geometry_msgs</run_depend>
   <run_depend>move_base_msgs</run_depend>
   <run_depend>roscpp</run_depend>
   <run_depend>std_msgs</run_depend>
   <run_depend>tf</run_depend>
+  <run_depend>rosserial</run_depend>
+  <run_depend>video_player</run_depend>
 
   <export>
   </export>
