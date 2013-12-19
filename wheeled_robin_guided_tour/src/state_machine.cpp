@@ -99,7 +99,7 @@ int main(int argc, char** argv) {
 	ss << current_goal;
 	std::stringstream check;
 	check << "/goals/";
-	check << ss;
+	check << ss.str();
 	check << "/x";
 	if(ros::param::has(check.str().c_str())) {
 		ROS_INFO("Parameter %s exists", check.str().c_str());
@@ -242,7 +242,7 @@ int main(int argc, char** argv) {
 					ROS_INFO("Next goal is: %s", ss.str().c_str());
 					std::stringstream check;
 					check << "/goals/";
-					check << ss;
+					check << ss.str();
 					check << "/x";
 					if(ros::param::has(check.str().c_str())) { // another goal exists
 						createPoseFromParams(ss.str().c_str(), &(goal.target_pose));
