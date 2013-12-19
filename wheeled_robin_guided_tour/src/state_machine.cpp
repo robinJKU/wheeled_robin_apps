@@ -93,23 +93,6 @@ int main(int argc, char** argv) {
 	// wait for other nodes to start up
 	ros::Duration(10).sleep();
 	
-	ros::spinOnce();
-	std::stringstream ss;
-	ss << goal_basename;
-	ss << current_goal;
-	std::stringstream check;
-	check << "/goals/";
-	check << ss.str();
-	check << "/x";
-	if(ros::param::has(check.str().c_str())) {
-		ROS_INFO("Parameter %s exists", check.str().c_str());
-	} else {
-		ROS_INFO("Parameter %s does not exist", check.str().c_str());
-	}
-	ros::spinOnce();
-	return 0;
-		
-	
 	while(ros::ok()) {
 		switch(st) {
 			case START: {
@@ -209,12 +192,12 @@ int main(int argc, char** argv) {
 				ss << current_goal;
 				ss << "/folder";
 				ros::param::get(ss.str().c_str(), srv.request.videoPath);
-        /*if (srv_client.call(srv)){
-                ROS_INFO("Presentation successful");
-        } else {
-                ROS_ERROR("Presentation failed");
-        }*/
-        st = ASK_REPETITION;
+			        /*if (srv_client.call(srv)){
+			                ROS_INFO("Presentation successful");
+			        } else {
+			                ROS_ERROR("Presentation failed");
+			        }*/
+			        st = ASK_REPETITION;
 				ROS_INFO("Switching to state %d", st);
 				break;
 			}
