@@ -28,7 +28,7 @@ int main(int argc, char** argv){
   node.param<std::string>("projection_frame", proj_tf_frame, "fixed_goal");
   node.param("x_offset", dist_z, 0.5);
   node.param("y_offset", dist_x, 0.0);
-    
+  dist_z = 1.0;
   tf::TransformBroadcaster broadcast;
   tf::TransformListener listener;
   tf::StampedTransform last_o2m;
