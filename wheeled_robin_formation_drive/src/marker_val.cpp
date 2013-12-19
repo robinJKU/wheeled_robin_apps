@@ -57,7 +57,7 @@ int main(int argc, char** argv){
       tf::Transform odom2goal;
       odom2goal = odom2marker*marker2goal;
       
-      last_o2m = odom2marker;
+      //last_o2m = odom2marker;
       broadcast.sendTransform(tf::StampedTransform(marker2goal, ros::Time::now(), marker_tf_name, goal_tf_name));
             
       searching = false;
