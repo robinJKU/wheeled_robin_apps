@@ -49,4 +49,12 @@
 	
 	# speech synthesis
 	<!--<include file="$(find speech_database)/launch/speech.launch"/>-->
+	
+	# video player
+	<arg name="cam_name" value="videoStreamer" />
+	<node pkg="video_player" type="video_player_node" name="$(arg cam_name)">
+	        <param name="mode" value="mode_II" />
+	        <param name="camera_name" value="$(arg cam_name)" />
+	        <remap from="camera/image_raw" to="camera/rgb/image_color/compressed_throttle" />
+       </node>
 </launch>
