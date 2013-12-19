@@ -91,13 +91,13 @@ int main(int argc, char** argv){
 	    }
 	    
 	    if((ros::Time::now() - search_start).sec < SEARCH_TIME_SEC)*/
-	    {
+	    /*{
 		tf::Transform rot_z;     
 		rot_z.setOrigin( tf::Vector3(0.0, 0.0, 0.0) );
 		rot_z.setRotation( tf::Quaternion(tf::Vector3(0,0,1), M_PI/4) );
 		ROS_INFO("Turning robot to search master pattern!");
 		broadcast.sendTransform(tf::StampedTransform(map2base*rot_z, ros::Time::now(), "map", goal_tf_name));
-	    }
+	    }*/
 	    //else
 	    {
 	//	broadcast.sendTransform(tf::StampedTransform(odom2base, ros::Time::now(), "odom", goal_tf_name));
