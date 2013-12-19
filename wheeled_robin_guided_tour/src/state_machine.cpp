@@ -22,6 +22,8 @@
 #include <string>
 #include <sstream> 
 
+#include "video_player/PlayVideoSrv.h"
+
 // global variables
 ros::Time last_button_msg_time;	// last time a button has been pressed
 int current_goal = 0; // currently active goal
@@ -50,7 +52,10 @@ int main(int argc, char** argv) {
 	
 	// client for navigation goals
 	actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> client("move_base", true);
-	//client.waitForServer();
+	
+	// client for video player and service variable
+	ros::ServiceClient client = n.serviceClient<video_player::PlayVideoSrv>("/wheeled_robin/application/play_video");
+        video_player::PlayVideoSrv srv;
 	
 	// init state machine
 	state st = START;
@@ -142,24 +147,24 @@ int main(int argc, char** argv) {
 				break;
 			}
 			case WAIT_BUTTON_TOUR: {
-				if(ros::Time::now() - ask_time > ros::Duration(button_duration)) {
-					if(last_button_msg_time > ask_time && last_button_state) { // tour requested
-						st = APPROACH_PRESENTATION;
-						std::stringstream ss;
-						ss << goal_basename;
-						ss << current_goal;
-						createPoseFromParams(ss.str().c_str(), &(goal.target_pose));
-						client.sendGoal(goal);
-						ROS_INFO("Tour requested");
-						ROS_INFO("Switching to state %d", st);
-					} 
-				} else { // no tour requested
+				if(ros::Time::now() - ask_time > ros::Duration(button_duration)) { // no tour requested
 					std_msgs::String say_nothanks;
 					say_nothanks.data = "Thanks for wasting my time. Good bye.";
 					speech_pub.publish(say_nothanks);
 					st = RETURN_START;
 					ROS_INFO("No tour requested.");
 					ROS_INFO("Switching to state %d", st);
+				} else { // waiting for user
+					if(last_button_msg_time > ask_time && last_button_state) { // tour requested
+						std::stringstream ss;
+						ss << goal_basename;
+						ss << current_goal;
+						createPoseFromParams(ss.str().c_str(), &(goal.target_pose));
+						client.sendGoal(goal);
+						ROS_INFO("Tour requested");
+						st = APPROACH_PRESENTATION;
+						ROS_INFO("Switching to state %d", st);
+					}
 				}
 				break;
 			}
@@ -170,16 +175,19 @@ int main(int argc, char** argv) {
 				}
 				break;
 			case PRESENT:
-				std_msgs::String video_path;
 				std::stringstream ss;
 				ss << "/goals/";
 				ss << goal_basename;
 				ss << current_goal;
 				ss << "/folder";
-				ros::param::get("goal_basename", video_path.data);
-				video_path.data = video_path.data + video_path.data;
+				ros::param::get(ss.str().c_str(), srv.request.videoPath);
+			        if (client.call(srv)){
+			                ROS_INFO("Presentation successful");
+			        } else {
+			                ROS_ERROR("Presentation failed");
+			        }
+			        st = ASK_REPETITION;
 				break;
-				//TODO check if presentation is finished, switch to ASK_REPETITION
 			}
 			case ASK_REPETITION: {
 				std_msgs::String ask_pres;
@@ -191,7 +199,7 @@ int main(int argc, char** argv) {
 				break;
 			}
 			case WAIT_BUTTON_REPETITION: {
-				if(ros::Time::now() - ask_time > ros::Duration(button_duration)) {
+				if(ros::Time::now() - ask_time <= ros::Duration(button_duration)) { // waiting for user
 					if(last_button_msg_time > ask_time && last_button_state) { // repetition requested
 						st = PRESENT;
 						ROS_INFO("Button pressed");
