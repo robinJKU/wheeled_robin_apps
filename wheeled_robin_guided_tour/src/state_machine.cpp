@@ -192,11 +192,11 @@ int main(int argc, char** argv) {
 				ss << current_goal;
 				ss << "/folder";
 				ros::param::get(ss.str().c_str(), srv.request.videoPath);
-			        /*if (srv_client.call(srv)){
+			        if (srv_client.call(srv)){
 			                ROS_INFO("Presentation successful");
 			        } else {
 			                ROS_ERROR("Presentation failed");
-			        }*/
+			        }
 			        st = ASK_REPETITION;
 				ROS_INFO("Switching to state %d", st);
 				break;
