@@ -15,7 +15,7 @@ int main(int argc, char** argv){
 	node.param<std::string>("goal_frame", goal_tf_name, "goal");
 	node.param<std::string>("projection_frame", proj_tf_frame, "fixed_goal");
 	node.param("p_lin", p_lin, 0.5);
-	node.param("p_ang", p_ang, 1);
+	node.param("p_ang", p_ang, 1.0);
 	node.param("vmax_lin", vmax_lin, 0.3);
 	node.param("vmax_ang", vmax_ang, 0.5);
 
@@ -42,7 +42,7 @@ int main(int argc, char** argv){
 	    }
 	    else
 	    {
-	      vel_msg.linear.x = 0;
+	      vel_msg.linear.x = 0.0;
 	    }
 	    tfScalar roll, pitch, yaw;
 	    tf::Matrix3x3(transform.getRotation()).getRPY(roll, pitch, yaw);
@@ -53,8 +53,8 @@ int main(int argc, char** argv){
 	    
 	  } catch (tf::TransformException ex) {
 	    ROS_INFO("No pattern detected yet!");
-	    vel_msg.linear.x = 0;
-	    vel_msg.angular.z = 0;
+	    vel_msg.linear.x = 0.0;
+	    vel_msg.angular.z = 0.0;
 	  }	  
 
 	  vel_msg_pub.publish(vel_msg);
