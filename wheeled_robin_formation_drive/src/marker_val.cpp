@@ -45,10 +45,8 @@ int main(int argc, char** argv){
       tf::StampedTransform odom2marker;
       
       ros::Time now = ros::Time::now();
-      if(!initialized)
-      {
-      	listener.waitForTransform("odom", marker_tf_name, now, ros::Duration(WAITING_TIME));
-      }
+      
+      listener.waitForTransform("odom", marker_tf_name, now, ros::Duration(WAITING_TIME));
       listener.lookupTransform("odom", marker_tf_name, now, odom2marker);
       
 
