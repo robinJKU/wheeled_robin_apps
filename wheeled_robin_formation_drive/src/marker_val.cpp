@@ -83,6 +83,7 @@ int main(int argc, char** argv){
 	{
 	    turn = true;
 	    ROS_INFO("Turning started!");
+	    broadcast.sendTransform(tf::StampedTransform(last_o2m, ros::Time::now(), "map", goal_tf_name));
 	    /*if(!searching)
 	    {
 		searching = true;
