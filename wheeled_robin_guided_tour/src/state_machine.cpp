@@ -93,6 +93,7 @@ int main(int argc, char** argv) {
 	// wait for other nodes to start up
 	ros::Duration(10).sleep();
 	
+	ros::spinOnce();
 	std::stringstream ss;
 	ss << goal_basename;
 	ss << current_goal;
@@ -103,6 +104,7 @@ int main(int argc, char** argv) {
 	if(ros::param::has(check.str().c_str())) {
 		ROS_INFO("Parameter exists");
 	}
+	ros::spinOnce();
 	return 0;
 		
 	
