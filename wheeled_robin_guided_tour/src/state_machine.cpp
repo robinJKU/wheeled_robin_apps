@@ -10,7 +10,7 @@
  * December 2013
  */
 
-//#define DEBUG_STATES
+#define DEBUG_STATES
 
 #include <ros/ros.h>
 #include <tf/transform_listener.h>
@@ -116,6 +116,7 @@ int main(int argc, char** argv) {
 					createPoseFromParams("base", &(goal.target_pose));
 					client.sendGoal(goal);
 					st = APPROACH_PERSON;
+					break;
 				#endif
 				
 				// tf from robot to base footprint of person at /person
@@ -195,6 +196,11 @@ int main(int argc, char** argv) {
 				ss << current_goal;
 				ss << "/folder";
 				ros::param::get(ss.str().c_str(), srv.request.videoPath);
+				#ifdef DEBUG_STATES
+					st = ASK_REPETITION;
+					ROS_INFO("Switching to state %d", st);
+					break;
+				#endif
 			        if (srv_client.call(srv)){
 			                ROS_INFO("Presentation successful");
 			        } else {
