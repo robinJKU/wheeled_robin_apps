@@ -23,13 +23,13 @@
   <param name="goal_frame" type="string" value="goal"/>	
   <param name="marker_frame" type="string" value="master_pattern"/>
   <node name="marker_validation" pkg="wheeled_robin_formation_drive" type="marker_validation" output="screen" >
-    <param name="x_offset" type="double" value="1.0"/>
-    <param name="y_offset" type="double" value="1.0"/>
+    <param name="x_offset" type="double" value="0.5"/>
+    <param name="y_offset" type="double" value="0.0"/>
   </node>
 
   <node name="calc_vel" pkg="wheeled_robin_formation_drive" type="vel_control" output="screen">
-    <param name="p_lin" type="double" value="4.0"/>
-    <param name="p_ang" type="double" value="0.5"/>
+    <param name="p_lin" type="double" value="0.5"/>
+    <param name="p_ang" type="double" value="0.1"/>
     <remap from="/cmd_vel" to="/cmd_vel_mux/input/teleop" />
   </node>
   
