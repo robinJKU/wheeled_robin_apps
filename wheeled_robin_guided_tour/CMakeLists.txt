@@ -7,6 +7,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   tf
+  video_player
 )
 
 catkin_package(
@@ -22,7 +23,7 @@ include_directories(
 )
 
 add_executable(state_machine src/state_machine.cpp)
-
+add_dependencies(state_machine video_player)
 target_link_libraries(state_machine
    ${catkin_LIBRARIES}
 )
