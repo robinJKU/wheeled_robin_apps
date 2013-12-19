@@ -54,7 +54,7 @@ int main(int argc, char** argv) {
 	actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> client("move_base", true);
 	
 	// client for video player and service variable
-	ros::ServiceClient client = n.serviceClient<video_player::PlayVideoSrv>("/wheeled_robin/application/play_video");
+	ros::ServiceClient srv_client = nh.serviceClient<video_player::PlayVideoSrv>("/wheeled_robin/application/play_video");
         video_player::PlayVideoSrv srv;
 	
 	// init state machine
@@ -181,7 +181,7 @@ int main(int argc, char** argv) {
 				ss << current_goal;
 				ss << "/folder";
 				ros::param::get(ss.str().c_str(), srv.request.videoPath);
-			        if (client.call(srv)){
+			        if (srv_client.call(srv)){
 			                ROS_INFO("Presentation successful");
 			        } else {
 			                ROS_ERROR("Presentation failed");
