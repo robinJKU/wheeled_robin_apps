@@ -68,20 +68,20 @@ int main(int argc, char** argv) {
 	
 	// read parameters
 	double base_range; // range around base to trigger question for tour
-	ros::param::get("base_range", base_range);
+	ros::param::get("~base_range", base_range);
 	base_range = base_range*base_range; // cheaper to compare (no sqrt)
 	std::string person_frame; // name of frame to person or group of persons
-	ros::param::get("person_frame", person_frame);
+	ros::param::get("~person_frame", person_frame);
 	
 	std::string person_threshold_frame; // name of frame of person position threshold
-	ros::param::get("person_threshold_frame", person_threshold_frame);
+	ros::param::get("~person_threshold_frame", person_threshold_frame);
 	
 	double button_duration; // time for user to interact with robot
-	ros::param::get("button_duration", button_duration);
+	ros::param::get("~button_duration", button_duration);
 	std::string goal_basename; // basename for goal parameter names (within goals namespace)
-	ros::param::get("goal_basename", goal_basename);
+	ros::param::get("~goal_basename", goal_basename);
 	std::string video_path; // path to folder with presentation videos
-	ros::param::get("video_path", video_path);
+	ros::param::get("~video_path", video_path);
 	
 	// init time
 	ros::Time ask_time;
@@ -113,6 +113,8 @@ int main(int argc, char** argv) {
 			}
 			case WAIT_PERSON: {
 				#ifdef DEBUG_STATES
+					createPoseFromParams("base", &(goal.target_pose));
+					client.sendGoal(goal);
 					st = APPROACH_PERSON;
 				#endif
 				
@@ -153,9 +155,6 @@ int main(int argc, char** argv) {
 				break;
 			}
 			case WAIT_BUTTON_TOUR: {
-				ROS_INFO("now: %f", ros::Time::now().toSec());
-				ROS_INFO("ask_time: %f", ask_time.toSec());
-				ROS_INFO("duration: %f", ros::Duration(20.0).toSec());
 				if(ros::Time::now() - ask_time > ros::Duration(20.0)) { // no tour requested
 					std_msgs::String say_nothanks;
 					say_nothanks.data = "Thanks for wasting my time. Good bye.";
@@ -163,19 +162,21 @@ int main(int argc, char** argv) {
 					createPoseFromParams("start", &(goal.target_pose));
 					client.sendGoal(goal);
 					st = RETURN_START;
+					ROS_INFO("Switching to state %d", st);
 					ROS_INFO("No tour requested.");
 				} else { // waiting for user
 					if(last_button_msg_time > ask_time && last_button_state) { // tour requested
 						std::stringstream ss;
 						ss << goal_basename;
 						ss << current_goal;
+						ROS_INFO("Lookup goal: %s", ss.str().c_str());
 						createPoseFromParams(ss.str().c_str(), &(goal.target_pose));
 						client.sendGoal(goal);
 						ROS_INFO("Tour requested");
 						st = APPROACH_PRESENTATION;
+						ROS_INFO("Switching to state %d", st);
 					}
 				}
-				ROS_INFO("Switching to state %d", st);
 				break;
 			}
 			case APPROACH_PRESENTATION: {
@@ -197,6 +198,7 @@ int main(int argc, char** argv) {
                 ROS_ERROR("Presentation failed");
         }*/
         st = ASK_REPETITION;
+				ROS_INFO("Switching to state %d", st);
 				break;
 			}
 			case ASK_REPETITION: {
@@ -220,7 +222,12 @@ int main(int argc, char** argv) {
 					std::stringstream ss;
 					ss << goal_basename;
 					ss << current_goal;
-					if(ros::param::has(ss.str().c_str())) { // another goal exists
+					ROS_INFO("Next goal is: %s", ss.str().c_str());
+					stringstream check;
+					check << "/goals/";
+					check << ss;
+					check << "/x";
+					if(ros::param::has(check.str().c_str()) { // another goal exists
 						createPoseFromParams(ss.str().c_str(), &(goal.target_pose));
 						client.sendGoal(goal);
 						st = APPROACH_PRESENTATION;
@@ -289,5 +296,5 @@ void createPoseFromParams(std::string param_name, geometry_msgs::PoseStamped* po
 void buttonCb(std_msgs::Bool msg) {
 	last_button_msg_time = ros::Time::now();
 	last_button_state = msg.data;
-	ROS_INFO("Button event, %d", last_button_state);
+	//ROS_INFO("Button event, %d", last_button_state);
 }
