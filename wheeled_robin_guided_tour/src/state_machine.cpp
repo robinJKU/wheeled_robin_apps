@@ -153,6 +153,7 @@ int main(int argc, char** argv) {
 				break;
 			}
 			case WAIT_BUTTON_TOUR: {
+				ROS_INFO("delta = %f", (ros::Time::now() - ask_time).toSec());
 				if(ros::Time::now() - ask_time > ros::Duration(20.0)) { // no tour requested
 					std_msgs::String say_nothanks;
 					say_nothanks.data = "Thanks for wasting my time. Good bye.";
@@ -160,6 +161,7 @@ int main(int argc, char** argv) {
 					createPoseFromParams("start", &(goal.target_pose));
 					client.sendGoal(goal);
 					st = RETURN_START;
+					ROS_INFO("Switching to state %d", st);
 					ROS_INFO("No tour requested.");
 				} else { // waiting for user
 					if(last_button_msg_time > ask_time && last_button_state) { // tour requested
@@ -170,9 +172,9 @@ int main(int argc, char** argv) {
 						client.sendGoal(goal);
 						ROS_INFO("Tour requested");
 						st = APPROACH_PRESENTATION;
+						ROS_INFO("Switching to state %d", st);
 					}
 				}
-				ROS_INFO("Switching to state %d", st);
 				break;
 			}
 			case APPROACH_PRESENTATION: {
