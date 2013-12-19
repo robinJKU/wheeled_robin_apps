@@ -103,6 +103,8 @@ int main(int argc, char** argv) {
 	check << "/x";
 	if(ros::param::has(check.str().c_str())) {
 		ROS_INFO("Parameter exists");
+	} else {
+		ROS_INFO("Parameter does not exist");
 	}
 	ros::spinOnce();
 	return 0;
