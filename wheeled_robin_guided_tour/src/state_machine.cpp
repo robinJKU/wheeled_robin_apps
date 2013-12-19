@@ -113,6 +113,8 @@ int main(int argc, char** argv) {
 			}
 			case WAIT_PERSON: {
 				#ifdef DEBUG_STATES
+					createPoseFromParams("base", &(goal.target_pose));
+					client.sendGoal(goal);
 					st = APPROACH_PERSON;
 				#endif
 				
@@ -153,7 +155,6 @@ int main(int argc, char** argv) {
 				break;
 			}
 			case WAIT_BUTTON_TOUR: {
-				ROS_INFO("delta = %f", (ros::Time::now() - ask_time).toSec());
 				if(ros::Time::now() - ask_time > ros::Duration(20.0)) { // no tour requested
 					std_msgs::String say_nothanks;
 					say_nothanks.data = "Thanks for wasting my time. Good bye.";
@@ -168,6 +169,7 @@ int main(int argc, char** argv) {
 						std::stringstream ss;
 						ss << goal_basename;
 						ss << current_goal;
+						ROS_INFO("Lookup goal: %s", ss.str());
 						createPoseFromParams(ss.str().c_str(), &(goal.target_pose));
 						client.sendGoal(goal);
 						ROS_INFO("Tour requested");
@@ -288,5 +290,5 @@ void createPoseFromParams(std::string param_name, geometry_msgs::PoseStamped* po
 void buttonCb(std_msgs::Bool msg) {
 	last_button_msg_time = ros::Time::now();
 	last_button_state = msg.data;
-	ROS_INFO("Button event, %d", last_button_state);
+	//ROS_INFO("Button event, %d", last_button_state);
 }
