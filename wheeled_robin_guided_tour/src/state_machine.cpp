@@ -222,7 +222,7 @@ int main(int argc, char** argv) {
 					std::stringstream ss;
 					ss << goal_basename;
 					ss << current_goal;
-					ROS_INFO("Next goal is: %s", ros::param::has(ss.str().c_str()));
+					ROS_INFO("Next goal is: %s", ss.str().c_str());
 					if(ros::param::has(ss.str().c_str())) { // another goal exists
 						createPoseFromParams(ss.str().c_str(), &(goal.target_pose));
 						client.sendGoal(goal);
