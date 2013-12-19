@@ -40,7 +40,7 @@
 	<node pkg="rosserial_python" type="serial_node.py" args="/dev/ttyACM0" name="rosserial"/>
 	
 	# person tracking node
-	<node name="openni_tracker" pkg="openni_tracker" type="openni_tracker" args="-d $(find openni_tracker)/openni_tracker.xml" output="screen" >
+	<node name="openni_tracker" pkg="openni_tracker" type="openni_tracker" args="-d $(find openni_tracker)/openni_tracker.xml">
 		<param name = "camera_frame_id" value = "/camera_link" />
 	</node>
 	
@@ -48,5 +48,5 @@
 	<node pkg="robin_people_detection" type="robin_people_detection" name="robin_people_detection" output="screen" />
 	
 	# speech synthesis
-	<include file="$(find speech_database)/launch/speech.launch"/>
+	<!--<include file="$(find speech_database)/launch/speech.launch"/>-->
 </launch>
