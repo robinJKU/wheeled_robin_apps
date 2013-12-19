@@ -155,8 +155,8 @@ int main(int argc, char** argv) {
 			case WAIT_BUTTON_TOUR: {
 				ROS_INFO("now: %f", ros::Time::now().toSec());
 				ROS_INFO("ask_time: %f", ask_time.toSec());
-				ROS_INFO("duration: %f", ros::Duration(button_duration).toSec());
-				if(ros::Time::now() - ask_time > ros::Duration(button_duration)) { // no tour requested
+				ROS_INFO("duration: %f", ros::Duration(20.0).toSec());
+				if(ros::Time::now() - ask_time > ros::Duration(20.0)) { // no tour requested
 					std_msgs::String say_nothanks;
 					say_nothanks.data = "Thanks for wasting my time. Good bye.";
 					speech_pub.publish(say_nothanks);
