@@ -16,5 +16,6 @@
 
   <run_depend>wheeled_robin_bringup</run_depend>
   <run_depend>wheeled_robin_teleop</run_depend>
+  <run_depend>video_player</run_depend>
 
 </package>
