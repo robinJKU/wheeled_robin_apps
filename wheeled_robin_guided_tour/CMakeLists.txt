@@ -22,7 +22,7 @@ include_directories(
 )
 
 add_executable(state_machine src/state_machine.cpp)
-add_dependencies(state_machine video_player)
+add_dependencies(state_machine video_player_generate_messages_cpp)
 target_link_libraries(state_machine
    ${catkin_LIBRARIES}
 )
