@@ -47,4 +47,6 @@
 	# person detection node
 	<node pkg="robin_people_detection" type="robin_people_detection" name="robin_people_detection" output="screen" />
 	
+	# speech synthesis
+	<include file="$(find speech_database)/launch/speech.launch"/>
 </launch>
