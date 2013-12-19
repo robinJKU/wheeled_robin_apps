@@ -92,6 +92,7 @@ int main(int argc, char** argv) {
 	
 	// wait for other nodes to start up
 	ros::Duration(10).sleep();
+	ROS_INFO("####### %f ###########", button_duration);
 	
 	while(ros::ok()) {
 		switch(st) {
