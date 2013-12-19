@@ -8,7 +8,7 @@
 	</include>
 	
 	# transform from map to threshold position of persons to be approached and asked about a tour
-	<node pkg="tf" type="static_transform_publisher" name="person_threshold_broadcaster" args="2.5 -0.5 0 0 0 0 map person_threshold 1000" />
+	<node pkg="tf" type="static_transform_publisher" name="person_threshold_broadcaster" args="2.5 -0.5 0 0 0 0 map person_threshold_frame 1000" />
 	
 	# load parameters (such as coordinates of goals, etc.)
 	<rosparam file="$(find wheeled_robin_guided_tour)/launch/parameters.yaml" command="load" ns="goals" />
