@@ -7,8 +7,8 @@
 int main(int argc, char** argv){
 	ros::init(argc, argv, "vel_control");
 
-	std::string goal_tf_name;
-	double p_lin, p_ang, vmax_lin,vmax_ang, proj_tf_frame;
+	std::string goal_tf_name, proj_tf_frame;
+	double p_lin, p_ang, vmax_lin,vmax_ang;
 
 	ros::NodeHandle node;
 
