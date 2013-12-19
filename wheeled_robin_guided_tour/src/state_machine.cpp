@@ -169,7 +169,7 @@ int main(int argc, char** argv) {
 						std::stringstream ss;
 						ss << goal_basename;
 						ss << current_goal;
-						ROS_INFO("Lookup goal: %s", ss.str());
+						ROS_INFO("Lookup goal: %s", ss.str().c_str());
 						createPoseFromParams(ss.str().c_str(), &(goal.target_pose));
 						client.sendGoal(goal);
 						ROS_INFO("Tour requested");
