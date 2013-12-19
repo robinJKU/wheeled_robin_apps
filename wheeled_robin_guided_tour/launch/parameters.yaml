@@ -9,8 +9,8 @@ base: {x: 1.52, y: -0.5, z: 0.0, q1: 0.0, q2: 0.0, q3: 0.0, q4: 1.0}
 # labor tmech
 goal_0: {x: -1.64, y: 2.55, z: 0.0, q1: 0.0, q2: 0.0, q3: -0.2, q4: 0.9796, folder: '/kurt'}
 # labor robin
-goal_1: {x: 7.0, y: 1.96, z: 0.0, q1: 0.0, q2: 0.0, q3: 0.0, q4: 1.0, folder: '/werkstatt'}
+goal_1: {x: 7.5, y: 1.96, z: 0.0, q1: 0.0, q2: 0.0, q3: 0.0, q4: 1.0, folder: '/werkstatt'}
 # labor desreg
-goal_2: {x: 13.3, y: 1.76, z: 0.0, q1: 0.0, q2: 0.0, q3: 0.0, q4: 1.0, folder: '/diplomanden'}
+goal_2: {x: 13.8, y: 1.9, z: 0.0, q1: 0.0, q2: 0.0, q3: 0.0, q4: 1.0, folder: '/diplomanden'}
 # labor fluid
-goal_3: {x: 23.05, y: 1.6, z: 0.0, q1: 0.0, q2: 0.0, q3: -0.707, q4: 0.707, folder: '/bib'}
+goal_3: {x: 24.0, y: 1.6, z: 0.0, q1: 0.0, q2: 0.0, q3: -0.707, q4: 0.707, folder: '/bib'}
