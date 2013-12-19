@@ -24,18 +24,23 @@ int main(int argc, char** argv){
 	tf::TransformListener listener;
 
 	ros::Rate rate(RATE);
-
+	bool foundOnce = false;
+	
 	while (node.ok()){
 
 	  tf::StampedTransform transform;
 	  geometry_msgs::Twist vel_msg;
 	  
 	  try {
-	    ros::Time now = ros::Time::now();
-
-	    listener.waitForTransform("base_footprint", proj_tf_frame, now, ros::Duration(1.0) );
-	    listener.lookupTransform("base_footprint", proj_tf_frame, now, transform);
-
+	    if (!foundOnce)
+	    {
+	    	ros::Time now = ros::Time::now();
+		listener.waitForTransform("base_footprint", proj_tf_frame, now, ros::Duration(1.0) );
+	    }
+	    
+	    foundOnce = true;
+	    listener.lookupTransform("base_footprint", proj_tf_frame, ros::Time(0), transform);
+	    
 	    if(fabs(transform.getOrigin().x()) > 0.2)
 	    {
 	      vel_msg.linear.x = p_lin * transform.getOrigin().x();
