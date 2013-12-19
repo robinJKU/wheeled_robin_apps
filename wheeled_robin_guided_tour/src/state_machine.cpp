@@ -68,20 +68,20 @@ int main(int argc, char** argv) {
 	
 	// read parameters
 	double base_range; // range around base to trigger question for tour
-	ros::param::get("base_range", base_range);
+	ros::param::get("~base_range", base_range);
 	base_range = base_range*base_range; // cheaper to compare (no sqrt)
 	std::string person_frame; // name of frame to person or group of persons
-	ros::param::get("person_frame", person_frame);
+	ros::param::get("~person_frame", person_frame);
 	
 	std::string person_threshold_frame; // name of frame of person position threshold
-	ros::param::get("person_threshold_frame", person_threshold_frame);
+	ros::param::get("~person_threshold_frame", person_threshold_frame);
 	
 	double button_duration; // time for user to interact with robot
-	ros::param::get("button_duration", button_duration);
+	ros::param::get("~button_duration", button_duration);
 	std::string goal_basename; // basename for goal parameter names (within goals namespace)
-	ros::param::get("goal_basename", goal_basename);
+	ros::param::get("~goal_basename", goal_basename);
 	std::string video_path; // path to folder with presentation videos
-	ros::param::get("video_path", video_path);
+	ros::param::get("~video_path", video_path);
 	
 	// init time
 	ros::Time ask_time;
