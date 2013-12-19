@@ -157,9 +157,10 @@ int main(int argc, char** argv) {
 					std_msgs::String say_nothanks;
 					say_nothanks.data = "Thanks for wasting my time. Good bye.";
 					speech_pub.publish(say_nothanks);
+					createPoseFromParams("start", &(goal.target_pose));
+					client.sendGoal(goal);
 					st = RETURN_START;
 					ROS_INFO("No tour requested.");
-					ROS_INFO("Switching to state %d", st);
 				} else { // waiting for user
 					if(last_button_msg_time > ask_time && last_button_state) { // tour requested
 						std::stringstream ss;
@@ -169,9 +170,9 @@ int main(int argc, char** argv) {
 						client.sendGoal(goal);
 						ROS_INFO("Tour requested");
 						st = APPROACH_PRESENTATION;
-						ROS_INFO("Switching to state %d", st);
 					}
 				}
+				ROS_INFO("Switching to state %d", st);
 				break;
 			}
 			case APPROACH_PRESENTATION: {
@@ -235,6 +236,8 @@ int main(int argc, char** argv) {
 				std_msgs::String say_bye;
 				say_bye.data = "I hope you enjoyed the tour. Thanks for visiting us. Please follow me back to the start.";
 				speech_pub.publish(say_bye);
+				createPoseFromParams("start", &(goal.target_pose));
+				client.sendGoal(goal);
 				st = RETURN_START;
 				ROS_INFO("Switching to state %d", st);
 				break;
@@ -281,6 +284,7 @@ void createPoseFromParams(std::string param_name, geometry_msgs::PoseStamped* po
  * OUTPUT:	none
  */
 void buttonCb(std_msgs::Bool msg) {
+	ROS_INFO("Button event");
 	last_button_msg_time = ros::Time::now();
 	last_button_state = msg.data;
 }
