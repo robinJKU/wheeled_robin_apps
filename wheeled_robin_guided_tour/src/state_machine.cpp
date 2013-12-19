@@ -93,6 +93,19 @@ int main(int argc, char** argv) {
 	// wait for other nodes to start up
 	ros::Duration(10).sleep();
 	
+	std::stringstream ss;
+	ss << goal_basename;
+	ss << current_goal;
+	stringstream check;
+	check << "/goals/";
+	check << ss;
+	check << "/x";
+	if(ros::param::has(check.str().c_str())) {
+		ROS_INFO("Parameter exists");
+	}
+	return 0;
+		
+	
 	while(ros::ok()) {
 		switch(st) {
 			case START: {
@@ -227,7 +240,7 @@ int main(int argc, char** argv) {
 					check << "/goals/";
 					check << ss;
 					check << "/x";
-					if(ros::param::has(check.str().c_str()) { // another goal exists
+					if(ros::param::has(check.str().c_str())) { // another goal exists
 						createPoseFromParams(ss.str().c_str(), &(goal.target_pose));
 						client.sendGoal(goal);
 						st = APPROACH_PRESENTATION;
