@@ -10,6 +10,8 @@
  * December 2013
  */
 
+#define DEBUG_STATES
+
 #include <ros/ros.h>
 #include <tf/transform_listener.h>
 #include <std_msgs/String.h>
@@ -110,6 +112,10 @@ int main(int argc, char** argv) {
 				break;
 			}
 			case WAIT_PERSON: {
+				#ifdef DEBUG_STATES
+					st = APPROACH_PERSON;
+				#endif
+				
 				// tf from robot to base footprint of person at /person
 				try {
 					listener.lookupTransform(person_threshold_frame, person_frame, ros::Time(0), transform);
@@ -181,12 +187,12 @@ int main(int argc, char** argv) {
 				ss << current_goal;
 				ss << "/folder";
 				ros::param::get(ss.str().c_str(), srv.request.videoPath);
-			        if (srv_client.call(srv)){
-			                ROS_INFO("Presentation successful");
-			        } else {
-			                ROS_ERROR("Presentation failed");
-			        }
-			        st = ASK_REPETITION;
+        /*if (srv_client.call(srv)){
+                ROS_INFO("Presentation successful");
+        } else {
+                ROS_ERROR("Presentation failed");
+        }*/
+        st = ASK_REPETITION;
 				break;
 			}
 			case ASK_REPETITION: {
