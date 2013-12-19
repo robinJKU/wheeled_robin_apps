@@ -35,7 +35,7 @@ int main(int argc, char** argv){
   ros::Publisher pos_msg_pub = node.advertise<geometry_msgs::PoseStamped>("move_base_simple/goal", 10);
   
   ros::Rate rate(RATE);
-  bool searching = false , initialized = false;
+  bool searching = false , initialized = false, turn = false;
   ros::Time search_start;
   
   while (node.ok())
@@ -45,8 +45,12 @@ int main(int argc, char** argv){
       tf::StampedTransform odom2marker;
       
       ros::Time now = ros::Time::now();
-      listener.waitForTransform("odom", marker_tf_name, now, ros::Duration(WAITING_TIME));
+      if(!initialized)
+      {
+      	listener.waitForTransform("odom", marker_tf_name, now, ros::Duration(WAITING_TIME));
+      }
       listener.lookupTransform("odom", marker_tf_name, now, odom2marker);
+      
 
       tf::Transform marker2goal;     
       marker2goal.setOrigin( tf::Vector3(dist_x, 0.0, dist_z) );
@@ -60,6 +64,7 @@ int main(int argc, char** argv){
             
       searching = false;
       initialized = true;
+      turn = false;
     }
     catch (tf::TransformException ex)
     {
@@ -67,17 +72,18 @@ int main(int argc, char** argv){
       tf::StampedTransform map2base;
       listener.lookupTransform("map", "base_footprint", ros::Time(0), map2base);
       double diff_origin = map2base.getOrigin().x()-last_o2m.getOrigin().x();
-
+      
       if (initialized)
       {
 	ROS_INFO("Master pattern was not found! Recovery Behaviour started!");
-	if(diff_origin >= MAX_DIST)
+	if(diff_origin >= MAX_DIST && !turn)
 	{
 	    broadcast.sendTransform(tf::StampedTransform(last_o2m, ros::Time::now(), "map", goal_tf_name));
 	    ROS_INFO("Old marker position published");
 	} 
 	else
 	{
+	    turn = true;
 	    ROS_INFO("Turning started!");
 	    /*if(!searching)
 	    {
