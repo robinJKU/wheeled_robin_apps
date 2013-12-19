@@ -92,7 +92,6 @@ int main(int argc, char** argv) {
 	
 	// wait for other nodes to start up
 	ros::Duration(10).sleep();
-	ROS_INFO("####### %f ###########", base_range);
 	
 	while(ros::ok()) {
 		switch(st) {
@@ -154,9 +153,6 @@ int main(int argc, char** argv) {
 				break;
 			}
 			case WAIT_BUTTON_TOUR: {
-				ROS_INFO("now: %f", ros::Time::now().toSec());
-				ROS_INFO("ask_time: %f", ask_time.toSec());
-				ROS_INFO("duration: %f", ros::Duration(20.0).toSec());
 				if(ros::Time::now() - ask_time > ros::Duration(20.0)) { // no tour requested
 					std_msgs::String say_nothanks;
 					say_nothanks.data = "Thanks for wasting my time. Good bye.";
