@@ -96,7 +96,7 @@ int main(int argc, char** argv) {
 	std::stringstream ss;
 	ss << goal_basename;
 	ss << current_goal;
-	stringstream check;
+	std::stringstream check;
 	check << "/goals/";
 	check << ss;
 	check << "/x";
@@ -236,7 +236,7 @@ int main(int argc, char** argv) {
 					ss << goal_basename;
 					ss << current_goal;
 					ROS_INFO("Next goal is: %s", ss.str().c_str());
-					stringstream check;
+					std::stringstream check;
 					check << "/goals/";
 					check << ss;
 					check << "/x";
