@@ -1,0 +1,3 @@
+<launch>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find wheeled_robin_guided_tour)/rviz/guided_tour.rviz"/>
+</launch>
