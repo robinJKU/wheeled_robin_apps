@@ -35,13 +35,13 @@ int main(int argc, char** argv){
 	    if (!foundOnce)
 	    {
 	    	ros::Time now = ros::Time::now();
-		listener.waitForTransform("base_footprint", proj_tf_frame, now, ros::Duration(1.0) );
+		listener.waitForTransform("base_footprint", proj_tf_frame, now, ros::Duration(5.0) );
 	    }
 	    
 	    foundOnce = true;
 	    listener.lookupTransform("base_footprint", proj_tf_frame, ros::Time(0), transform);
 	    
-	    if(fabs(transform.getOrigin().x()) > 0.2)
+	    if(fabs(transform.getOrigin().x()) > 0.15)
 	    {
 	      vel_msg.linear.x = p_lin * transform.getOrigin().x();
 	    }
