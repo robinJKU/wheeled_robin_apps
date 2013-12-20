@@ -55,6 +55,9 @@
 	<node pkg="video_player" type="video_player_node" name="$(arg cam_name)">
 	        <param name="mode" value="mode_II" />
 	        <param name="camera_name" value="$(arg cam_name)" />
-	        <remap from="camera/image_raw" to="camera/rgb/image_color/compressed_throttle" />
        </node>
+       <param name="camera/image_raw/compressed/jpeg_quality" value="8"/>
+       <node pkg="topic_tools" type="throttle" name="camera_throttle" output="screen" args="messages camera/image_raw/compressed 10 camera/rgb/image_color/compressed_throttle"/>
+
+
 </launch>
