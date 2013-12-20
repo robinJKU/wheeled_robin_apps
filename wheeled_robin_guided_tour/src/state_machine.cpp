@@ -159,7 +159,7 @@ int main(int argc, char** argv) {
 				break;
 			}
 			case WAIT_BUTTON_TOUR: {
-				if(ros::Time::now() - ask_time > ros::Duration(20.0)) { // no tour requested
+				if(ros::Time::now() - ask_time > ros::Duration(10.0)) { // no tour requested
 					std_msgs::String say_nothanks;
 					say_nothanks.data = "Thanks for wasting my time. Good bye.";
 					speech_pub.publish(say_nothanks);
@@ -213,7 +213,7 @@ int main(int argc, char** argv) {
 			}
 			case ASK_REPETITION: {
 				std_msgs::String ask_pres;
-				ask_pres.data = "Would you like me to repeat the presentation?";
+				ask_pres.data = "Please touch me if you would like to see the presentation again.";
 				speech_pub.publish(ask_pres);
 				ask_time = ros::Time::now();
 				st = WAIT_BUTTON_REPETITION;
@@ -243,7 +243,7 @@ int main(int argc, char** argv) {
 						st = APPROACH_PRESENTATION;
 						ROS_INFO("Switching to state %d", st);
 						std_msgs::String say_continue;
-						say_continue.data = "Okay, lets continue with the next stop.";
+						say_continue.data = "Okay, let us continue with the next stop.";
 						speech_pub.publish(say_continue);
 					} else {
 						st = TALK_BYE;
