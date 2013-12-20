@@ -19,16 +19,14 @@ int main(int argc, char** argv){
   }
   
   std::string marker_tf_name, goal_tf_name, proj_tf_frame;
-  double dist_x, dist_z;
+  double dist_z;
  
   ros::NodeHandle node;
   
   node.param<std::string>("marker_frame", marker_tf_name, "master_pattern");
   node.param<std::string>("goal_frame", goal_tf_name, "goal");
   node.param<std::string>("projection_frame", proj_tf_frame, "fixed_goal");
-  node.param("x_offset", dist_z, 0.5);
-  node.param("y_offset", dist_x, 0.0);
-  dist_z = 1.0;
+  node.param("x_offset", dist_z, 1.0);
   
   tf::TransformBroadcaster broadcast;
   tf::TransformListener listener;
@@ -36,9 +34,12 @@ int main(int argc, char** argv){
   ros::Publisher pos_msg_pub = node.advertise<geometry_msgs::PoseStamped>("move_base_simple/goal", 10);
   
   ros::Rate rate(RATE);
+  
   bool searching = false , initialized = false, turn = false;
   ros::Time search_start;
   int turnCnt = 0;
+  sleep(5);
+  
   while (node.ok())
   {
     try
@@ -46,13 +47,12 @@ int main(int argc, char** argv){
       tf::StampedTransform odom2marker;
       
       ros::Time now = ros::Time::now();
-      
       listener.waitForTransform("odom", marker_tf_name, now, ros::Duration(WAITING_TIME));
       listener.lookupTransform("odom", marker_tf_name, now, odom2marker);
-      if(searching) ROS_INFO("Found again ?!");
+      if(searching) ROS_INFO("Found again?!");
 
       tf::Transform marker2goal;     
-      marker2goal.setOrigin( tf::Vector3(dist_x, 0.0, dist_z) );
+      marker2goal.setOrigin( tf::Vector3(0.0, 0.0, dist_z) );
       marker2goal.setRotation( tf::Quaternion(tf::Vector3(0,0,1), 0) );
       
       tf::Transform odom2goal;
@@ -68,12 +68,11 @@ int main(int argc, char** argv){
     }
     catch (tf::TransformException ex)
     {
-      
-      tf::StampedTransform odom2base;
-      listener.lookupTransform("odom", "base_footprint", ros::Time(0), odom2base);
-      double diff_origin = odom2base.getOrigin().x()-last_o2m.getOrigin().x();
       if (initialized)
       {
+	tf::StampedTransform odom2base;
+	listener.lookupTransform("odom", "base_footprint", ros::Time(0), odom2base);
+	double diff_origin = odom2base.getOrigin().x()-last_o2m.getOrigin().x();
       	searching = true;
 	ROS_INFO("Master pattern was not found! Recovery Behaviour started!");
 
@@ -104,6 +103,7 @@ int main(int argc, char** argv){
       {
 	trans = last_o2m;
       }
+      
       tfScalar roll, pitch, yaw;
       tf::Matrix3x3(trans.getRotation()).getRPY(roll, pitch, yaw);
       tf::Quaternion quat(tf::Vector3(0,0,1), yaw - M_PI / 2.0);
@@ -143,7 +143,7 @@ int main(int argc, char** argv){
 
     ros::spinOnce();
     rate.sleep();
-    
+
   }
 
   
