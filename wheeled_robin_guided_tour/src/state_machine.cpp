@@ -10,7 +10,7 @@
  * December 2013
  */
 
-#define DEBUG_STATES
+//#define DEBUG_STATES
 
 #include <ros/ros.h>
 #include <tf/transform_listener.h>
