@@ -70,6 +70,7 @@ int main(int argc, char** argv){
       tf::StampedTransform map2base;
       listener.lookupTransform("map", "base_footprint", ros::Time(0), map2base);
       double diff_origin = map2base.getOrigin().x()-last_o2m.getOrigin().x();
+      searching = true;
       
       if (initialized)
       {
@@ -115,8 +116,7 @@ int main(int argc, char** argv){
       tf::StampedTransform trans;
       listener.waitForTransform("map", goal_tf_name, ros::Time(0), ros::Duration(WAITING_TIME));
       listener.lookupTransform("map", goal_tf_name, ros::Time(0), trans);
-      
-
+            
       tfScalar roll, pitch, yaw;
       tf::Matrix3x3(trans.getRotation()).getRPY(roll, pitch, yaw);
       tf::Quaternion quat(tf::Vector3(0,0,1), yaw - M_PI / 2.0);
@@ -124,7 +124,21 @@ int main(int argc, char** argv){
       fixedTrans.setOrigin(tf::Vector3(trans.getOrigin().x(),trans.getOrigin().y(),0));
       fixedTrans.setRotation(quat);
       broadcast.sendTransform(tf::StampedTransform(fixedTrans, ros::Time::now(), "map", proj_tf_frame));
-      last_o2m = trans;
+      
+      if(!searching)
+      {
+	tf::StampedTransform trans;
+	listener.waitForTransform("map", marker_tf_name, ros::Time(0), ros::Duration(WAITING_TIME));
+	listener.lookupTransform("map", marker_tf_name, ros::Time(0), trans);
+	tfScalar roll, pitch, yaw;
+	tf::Matrix3x3(trans.getRotation()).getRPY(roll, pitch, yaw);
+	tf::Quaternion quat(tf::Vector3(0,0,1), yaw - M_PI / 2.0);
+	tf::StampedTransform fixedTrans;
+	fixedTrans.setOrigin(tf::Vector3(trans.getOrigin().x(),trans.getOrigin().y(),0));
+	fixedTrans.setRotation(quat);
+	//broadcast.sendTransform(tf::StampedTransform(fixedTrans, ros::Time::now(), "map", proj_tf_frame));
+	last_o2m = trans;
+      }
       /*
       msg.pose.position.x = trans.getOrigin().x();
       msg.pose.position.y = trans.getOrigin().y();
