@@ -1,0 +1,39 @@
+  <launch>
+  
+  	<!-- ##### Start own node ##### -->
+          	<node pkg="elevator" name="test" type="state_machine_elevator"/>
+ 		<node pkg="open_door_detector" type="detect_open_door" name="detect_open_door" output="screen" />
+    
+	<!-- ##### Start button ##### -->
+		<node pkg="rosserial_python" type="serial_node.py" args="/dev/ttyACM0" name="rosserial"/>
+
+	<!-- #### Map server #### -->
+		<arg name="map_file" default="$(find elevator)/maps/empty_map.yaml"/>
+		<node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
+
+	
+	<!-- #### Load Parameters from Server ##### -->
+		<rosparam file="$(find elevator)/launch/parameters.yaml" command="load" ns="goals" />
+
+
+	<!-- ##### Start wheeled robin simulation ##### -->
+		<!-- <include file="$(find wheeled_robin_bringup)/launch/minimal.launch"/> -->
+		<include file="$(find elevator)/launch/includes/move_base.launch.xml"/>
+
+	<!-- #### tf init ##### -->
+		<node pkg="tf" type="static_transform_publisher" name="transform_map_odom" args="50 50 0 0 0 0 /map /odom 100"/>
+
+	<!-- ##### Start kinect ### -->
+	<include file="$(find turtlebot_bringup)/launch/3dsensor.launch">
+	    <arg name="publish_tf"  value="true"/>
+	    <arg name="rgb_processing" value="true"/> <!-- only required if we use android client -->
+	    <arg name="depth_processing" value="true"/>
+	    <arg name="depth_registered_processing" value="false"/>
+	    <arg name="depth_registration" value="false"/>
+	    <arg name="disparity_processing" value="false"/>
+	    <arg name="disparity_registered_processing" value="false"/>
+	    <arg name="scan_processing" value="true"/>
+	  </include>
+
+
+  </launch>

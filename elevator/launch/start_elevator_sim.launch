@@ -1,0 +1,42 @@
+  <launch>
+  
+  	<!-- ##### Start own node ##### -->
+          	<node pkg="elevator" name="test" type="state_machine_elevator"/>
+ 		<node pkg="open_door_detector" type="detect_open_door" name="detect_open_door" output="screen" />
+    
+	
+	
+
+
+
+	<!-- #### Map server #### -->
+		<arg name="map_file" default="$(find elevator)/maps/playground.yaml"/>
+		<node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
+	
+	<!-- Load Parameters from Server -->
+		<rosparam file="$(find elevator)/launch/parameters.yaml" command="load" ns="goals" />
+
+
+	<!-- ##### Start wheeled robin simulation ##### -->
+		<!-- <include file="$(find wheeled_robin_bringup)/launch/minimal_fake.launch"/> -->
+		<include file="$(find elevator)/launch/includes/move_base.launch.xml"/>
+
+	<!-- #### tf init ##### -->
+		<node pkg="tf" type="static_transform_publisher" name="transform_map_odom" args="50 50 0 0 0 0 /map /odom 100"/>
+
+	
+
+	<!-- ##### Start rviz ##### -->
+	  	<!-- <include file="$(find wheeled_robin_rviz_launchers)/launch/view_robot.launch"/> -->
+		<node name="rviz" pkg="rviz" type="rviz" args="-d $(find elevator)/rviz_config/elevator_rviz.rviz" />
+
+
+
+		<include file="$(find elevator)/launch/turtlebot_playground.launch"/>
+
+		
+
+
+
+
+  </launch>
