@@ -1,5 +1,5 @@
 <launch>
-  <include file="$(find roomba_robin_bringup)/launch/minimal.launch"/>
+  <include file="$(find wheeled_robin_bringup)/launch/minimal.launch"/>
 
   <!--Launching the Kinect, with most of its features deactivated-->
   <include file="$(find turtlebot_bringup)/launch/3dsensor.launch">
@@ -40,6 +40,6 @@
   <node pkg="tf" type="static_transform_publisher" name="transform_map_odom" args="50 50 0 0 0 0 /map /odom 100"/> 
   
 
-  <include file="$(find turtlebot_navigation)/launch/includes/move_base.launch.xml"/>
+  <include file="$(find wheeled_robin_navigation)/launch/includes/move_base.launch.xml"/>
 
 </launch>
