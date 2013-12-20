@@ -48,7 +48,7 @@ int main(int argc, char** argv){
       
       listener.waitForTransform("odom", marker_tf_name, now, ros::Duration(WAITING_TIME));
       listener.lookupTransform("odom", marker_tf_name, now, odom2marker);
-      
+      if(searching) ROS_INFO("Found again ?!");
 
       tf::Transform marker2goal;     
       marker2goal.setOrigin( tf::Vector3(dist_x, 0.0, dist_z) );
@@ -84,7 +84,7 @@ int main(int argc, char** argv){
 	{
 	    turn = true;
 	    ROS_INFO("Turning started!");
-	    broadcast.sendTransform(tf::StampedTransform(last_o2m, ros::Time::now(), "map", goal_tf_name));
+	    //broadcast.sendTransform(tf::StampedTransform(last_o2m, ros::Time::now(), "map", goal_tf_name));
 	    /*if(!searching)
 	    {
 		searching = true;
