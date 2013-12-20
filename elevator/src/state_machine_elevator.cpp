@@ -165,10 +165,25 @@ int main(int argc, char** argv) {
 				posY_off = door_pos.pose.position.y;
 				
 				if(posX_off != 0 || posY_off != 0) {
-				    st = DRIVE_DOOR; 
-				    ROS_INFO("posX is: %f", posX_off);
-				    ROS_INFO("posY is: %f", posY_off);
-				    mapclient.call(mapSrv);
+				   ros::Duration(2).sleep();
+				   if (client.call(srv)){
+				  
+				    door_pos = srv.response.door_pos;
+				    
+				    } else {
+				      ROS_ERROR("Failed to call service detect_open_door");
+				      return 1;
+				    
+				    }	
+				    posX_off = door_pos.pose.position.x;
+				    posY_off = door_pos.pose.position.y;
+				    if(posX_off != 0 || posY_off != 0) {
+					st = DRIVE_DOOR; 
+					ROS_INFO("posX is: %f", posX_off);
+					ROS_INFO("posY is: %f", posY_off);
+					mapclient.call(mapSrv);
+					ros::Duration(0.5).sleep();
+				    }
 				}
 				
 				
@@ -211,7 +226,12 @@ int main(int argc, char** argv) {
 				if (client.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
 					
 					ROS_INFO("Im at the door");
-					createOffsetPose(&(goal.target_pose), 0.7, 0, 3.14);
+					
+					ros::param::get("/goals/endPose/x", posX_off);
+					ros::param::get("/goals/endPose/y", posY_off);
+					ros::param::get("/goals/endPose/w", rotW_off);
+									
+					createOffsetPose(&(goal.target_pose), posX_off, posY_off, rotW_off);
 					client.sendGoal(goal);
 					st = ROTATION;
 					ROS_INFO("Driving into the elevator");
