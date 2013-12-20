@@ -77,7 +77,7 @@ int main(int argc, char** argv){
 	ROS_INFO("Master pattern was not found! Recovery Behaviour started!");
 	if(diff_origin >= MAX_DIST && !turn)
 	{
-	    broadcast.sendTransform(tf::StampedTransform(last_o2m, ros::Time::now(), "map", goal_tf_name));
+	    //broadcast.sendTransform(tf::StampedTransform(last_o2m, ros::Time::now(), "map", goal_tf_name));
 	    ROS_INFO("Old marker position published");
 	} 
 	else
