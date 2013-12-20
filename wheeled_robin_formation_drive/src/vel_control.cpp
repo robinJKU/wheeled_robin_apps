@@ -7,12 +7,11 @@
 int main(int argc, char** argv){
 	ros::init(argc, argv, "vel_control");
 
-	std::string goal_tf_name, proj_tf_frame;
+	std::string proj_tf_frame;
 	double p_lin, p_ang, vmax_lin,vmax_ang;
 
 	ros::NodeHandle node;
 
-	node.param<std::string>("goal_frame", goal_tf_name, "goal");
 	node.param<std::string>("projection_frame", proj_tf_frame, "fixed_goal");
 	node.param("p_lin", p_lin, 0.5);
 	node.param("p_ang", p_ang, 1.0);
@@ -24,7 +23,9 @@ int main(int argc, char** argv){
 	tf::TransformListener listener;
 
 	ros::Rate rate(RATE);
+	
 	bool foundOnce = false;
+	sleep(5);
 	
 	while (node.ok()){
 
@@ -57,7 +58,6 @@ int main(int argc, char** argv){
 	    if(fabs(vel_msg.angular.z) > vmax_ang) vel_msg.angular.z = vmax_ang * vel_msg.angular.z/fabs(vel_msg.angular.z);
 	    
 	  } catch (tf::TransformException ex) {
-	    ROS_INFO("No pattern detected yet!");
 	    vel_msg.linear.x = 0.0;
 	    vel_msg.angular.z = 0.0;
 	  }	  
