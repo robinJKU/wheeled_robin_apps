@@ -3,7 +3,7 @@
 	<include file="$(find roomba_robin_bringup)/launch/minimal.launch"/>
 	
 	# navigation
-	<include file="$(find wheeled_robin_navigation)/launch/amcl_demo.launch">
+	<include file="$(find turtlebot_navigation)/launch/amcl_demo.launch">
 	    <arg name="map_file"  value="/home/turtlebot/fullMap.yaml"/>
 	</include>
 	
