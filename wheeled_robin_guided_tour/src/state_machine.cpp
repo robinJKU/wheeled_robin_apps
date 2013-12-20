@@ -196,6 +196,7 @@ int main(int argc, char** argv) {
 				ss << current_goal;
 				ss << "/folder";
 				ros::param::get(ss.str().c_str(), srv.request.videoPath);
+				srv.request.videoPath = video_path + srv.request.videoPath;
 				#ifdef DEBUG_STATES
 					st = ASK_REPETITION;
 					ROS_INFO("Switching to state %d", st);
